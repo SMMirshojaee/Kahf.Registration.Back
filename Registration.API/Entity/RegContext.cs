@@ -83,6 +83,13 @@ public partial class RegContext : DbContext
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Title).HasMaxLength(50);
+            entity.Property(e => e.Type).HasMaxLength(50);
+            entity.Property(e => e.Value).HasMaxLength(1000);
+
+            entity.HasOne(d => d.Field).WithMany(p => p.FieldOptions)
+                .HasForeignKey(d => d.FieldId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FieldOptions_Fields");
         });
 
         modelBuilder.Entity<FieldTypes>(entity =>

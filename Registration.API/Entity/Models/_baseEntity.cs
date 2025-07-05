@@ -6,7 +6,9 @@ public abstract class BaseEntity
     public abstract DateTime CreatedDate { get; set; }
 }
 
+partial class ApplicantFormValues : BaseEntity;
 partial class Applicants : BaseEntity;
+partial class FieldOptions : BaseEntity;
 partial class Fields : BaseEntity;
 partial class FieldTypes : BaseEntity;
 partial class Regs : BaseEntity;

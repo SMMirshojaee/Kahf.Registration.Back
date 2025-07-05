@@ -5,9 +5,9 @@ namespace Registration.API.Entity.Models;
 
 public partial class ApplicantFormValues
 {
-    public int Id { get; set; }
+    public override int Id { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public override DateTime CreatedDate { get; set; }
 
     public int ApplicantId { get; set; }
 

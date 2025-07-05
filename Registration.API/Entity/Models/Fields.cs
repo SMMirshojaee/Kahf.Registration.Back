@@ -25,6 +25,8 @@ public partial class Fields
 
     public virtual ICollection<ApplicantFormValues> ApplicantFormValues { get; set; } = new List<ApplicantFormValues>();
 
+    public virtual ICollection<FieldOptions> FieldOptions { get; set; } = new List<FieldOptions>();
+
     public virtual FieldTypes FieldType { get; set; } = null!;
 
     public virtual RegSteps RegStep { get; set; } = null!;
