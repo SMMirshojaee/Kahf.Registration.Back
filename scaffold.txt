@@ -1,1 +1,1 @@
-dotnet ef dbcontext scaffold "Server=.;Database=Kahf.Registration;User Id=sa;Password=master;" Microsoft.EntityFrameworkCore.SqlServer --output-dir Entity/Models --context-dir Entity --context RegContext --use-database-names --no-onconfiguring --no-pluralize
+Scaffold-DbContext -force "Server=.;Database=Kahf.Registration;User Id=sa;Password=master;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entity\Models -ContextDir Entity -Context RegContext -UseDatabaseNames -NoPluralize
