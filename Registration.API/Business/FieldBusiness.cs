@@ -7,8 +7,7 @@ namespace Registration.API.Business
         public Task<List<Fields>> GetByRegStepId(int regStepId) =>
             Where(e => e.RegStepId == regStepId)
                 .Include(e => e.FieldType)
-                //.Include(e=>e.)
+                //.Include(e => e.FieldOptions)
                 .ToListAsync();
-
     }
 }

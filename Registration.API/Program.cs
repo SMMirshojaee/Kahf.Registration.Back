@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<RegContext>(options =>
-    options.UseSqlServer("Server=.;Database=Kahf.Registration;User Id=sa;Password=master;"));
+    options.UseSqlServer("Server=.;Database=Kahf.Registration;User Id=sa;Password=master;Trusted_Connection=True;TrustServerCertificate=True"));
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
