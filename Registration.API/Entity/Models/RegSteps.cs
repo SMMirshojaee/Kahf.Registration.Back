@@ -5,11 +5,11 @@ namespace Registration.API.Entity.Models;
 
 public partial class RegSteps
 {
-    public override short Id { get; set; }
+    public override int Id { get; set; }
 
-    public short RegId { get; set; }
+    public int RegId { get; set; }
 
-    public short StepId { get; set; }
+    public int StepId { get; set; }
 
     public string Title { get; set; } = null!;
 

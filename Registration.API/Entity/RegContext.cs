@@ -16,6 +16,12 @@ public partial class RegContext : DbContext
     {
     }
 
+    public virtual DbSet<ApplicantFormValues> ApplicantFormValues { get; set; }
+
+    public virtual DbSet<Applicants> Applicants { get; set; }
+
+    public virtual DbSet<FieldOptions> FieldOptions { get; set; }
+
     public virtual DbSet<FieldTypes> FieldTypes { get; set; }
 
     public virtual DbSet<Fields> Fields { get; set; }
@@ -34,8 +40,63 @@ public partial class RegContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ApplicantFormValues>(entity =>
+        {
+            entity.ToTable("ApplicantFormValues", "applicant");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Applicant).WithMany(p => p.ApplicantFormValues)
+                .HasForeignKey(d => d.ApplicantId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicantFormValues_Applicants");
+
+            entity.HasOne(d => d.Field).WithMany(p => p.ApplicantFormValues)
+                .HasForeignKey(d => d.FieldId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicantFormValues_Fields");
+
+            entity.HasOne(d => d.FieldOption).WithMany(p => p.ApplicantFormValues)
+                .HasForeignKey(d => d.FieldOptionId)
+                .HasConstraintName("FK_ApplicantFormValues_FieldOptions");
+        });
+
+        modelBuilder.Entity<Applicants>(entity =>
+        {
+            entity.ToTable("Applicants", "applicant");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.NationalNumber)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.TrackingCode)
+                .HasMaxLength(5)
+                .IsFixedLength();
+        });
+
+        modelBuilder.Entity<FieldOptions>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_FormOptions");
+
+            entity.ToTable("FieldOptions", "field");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Title).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<FieldTypes>(entity =>
         {
+            entity.ToTable("FieldTypes", "field");
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
@@ -45,6 +106,8 @@ public partial class RegContext : DbContext
 
         modelBuilder.Entity<Fields>(entity =>
         {
+            entity.ToTable("Fields", "field");
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
@@ -64,6 +127,8 @@ public partial class RegContext : DbContext
 
         modelBuilder.Entity<RegStepStatuses>(entity =>
         {
+            entity.ToTable("RegStepStatuses", "reg");
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
@@ -77,6 +142,8 @@ public partial class RegContext : DbContext
 
         modelBuilder.Entity<RegSteps>(entity =>
         {
+            entity.ToTable("RegSteps", "reg");
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
@@ -97,6 +164,8 @@ public partial class RegContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Registrations");
 
+            entity.ToTable("Regs", "reg");
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
@@ -107,6 +176,8 @@ public partial class RegContext : DbContext
 
         modelBuilder.Entity<Steps>(entity =>
         {
+            entity.ToTable("Steps", "reg");
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");

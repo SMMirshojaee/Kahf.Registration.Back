@@ -5,11 +5,11 @@ namespace Registration.API.Entity.Models;
 
 public partial class Fields
 {
-    public short Id { get; set; }
+    public override int Id { get; set; }
 
-    public short RegStepId { get; set; }
+    public int RegStepId { get; set; }
 
-    public short FieldTypeId { get; set; }
+    public int FieldTypeId { get; set; }
 
     public short Order { get; set; }
 
@@ -21,7 +21,9 @@ public partial class Fields
 
     public bool Hidden { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public override DateTime CreatedDate { get; set; }
+
+    public virtual ICollection<ApplicantFormValues> ApplicantFormValues { get; set; } = new List<ApplicantFormValues>();
 
     public virtual FieldTypes FieldType { get; set; } = null!;
 

@@ -5,9 +5,9 @@ namespace Registration.API.Entity.Models;
 
 public partial class RegStepStatuses
 {
-    public override short Id { get; set; }
+    public override int Id { get; set; }
 
-    public short RegStepId { get; set; }
+    public int RegStepId { get; set; }
 
     public string Title { get; set; } = null!;
 

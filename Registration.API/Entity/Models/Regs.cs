@@ -5,7 +5,7 @@ namespace Registration.API.Entity.Models;
 
 public partial class Regs
 {
-    public override short Id { get; set; }
+    public override int Id { get; set; }
 
     public string Title { get; set; } = null!;
 
