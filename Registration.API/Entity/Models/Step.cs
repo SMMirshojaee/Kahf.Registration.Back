@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Registration.API.Entity.Models;
 
-public partial class FieldTypes
+public partial class Step
 {
     public override int Id { get; set; }
 
     public string Title { get; set; } = null!;
 
-    public string Name { get; set; } = null!;
+    public string Description { get; set; } = null!;
 
     public override DateTime CreatedDate { get; set; }
 
-    public virtual ICollection<Fields> Fields { get; set; } = new List<Fields>();
+    public virtual ICollection<RegStep> RegSteps { get; set; } = new List<RegStep>();
 }

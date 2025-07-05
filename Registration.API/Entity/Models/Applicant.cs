@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Registration.API.Entity.Models;
 
-public partial class Applicants
+public partial class Applicant
 {
     public override int Id { get; set; }
 
@@ -19,5 +19,5 @@ public partial class Applicants
 
     public string TrackingCode { get; set; } = null!;
 
-    public virtual ICollection<ApplicantFormValues> ApplicantFormValues { get; set; } = new List<ApplicantFormValues>();
+    public virtual ICollection<ApplicantFormValue> ApplicantFormValues { get; set; } = new List<ApplicantFormValue>();
 }

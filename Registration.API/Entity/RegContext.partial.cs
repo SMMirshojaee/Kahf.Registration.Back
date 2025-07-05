@@ -6,6 +6,6 @@ public partial class RegContext
 {
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ApplicantFormValues>().HasQueryFilter(e => !e.Deleted);
+        modelBuilder.Entity<ApplicantFormValue>().HasQueryFilter(e => !e.Deleted);
     }
 }

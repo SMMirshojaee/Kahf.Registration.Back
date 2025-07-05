@@ -12,27 +12,45 @@ public partial class RegContext : DbContext
     {
     }
 
-    public virtual DbSet<ApplicantFormValues> ApplicantFormValues { get; set; }
+    public virtual DbSet<Applicant> Applicants { get; set; }
 
-    public virtual DbSet<Applicants> Applicants { get; set; }
+    public virtual DbSet<ApplicantFormValue> ApplicantFormValues { get; set; }
 
-    public virtual DbSet<FieldOptions> FieldOptions { get; set; }
+    public virtual DbSet<Field> Fields { get; set; }
 
-    public virtual DbSet<FieldTypes> FieldTypes { get; set; }
+    public virtual DbSet<FieldOption> FieldOptions { get; set; }
 
-    public virtual DbSet<Fields> Fields { get; set; }
+    public virtual DbSet<FieldType> FieldTypes { get; set; }
 
-    public virtual DbSet<RegStepStatuses> RegStepStatuses { get; set; }
+    public virtual DbSet<Reg> Regs { get; set; }
 
-    public virtual DbSet<RegSteps> RegSteps { get; set; }
+    public virtual DbSet<RegStep> RegSteps { get; set; }
 
-    public virtual DbSet<Regs> Regs { get; set; }
+    public virtual DbSet<RegStepStatus> RegStepStatuses { get; set; }
 
-    public virtual DbSet<Steps> Steps { get; set; }
+    public virtual DbSet<Step> Steps { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ApplicantFormValues>(entity =>
+        modelBuilder.Entity<Applicant>(entity =>
+        {
+            entity.ToTable("Applicants", "applicant");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.NationalNumber)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.TrackingCode)
+                .HasMaxLength(5)
+                .IsFixedLength();
+        });
+
+        modelBuilder.Entity<ApplicantFormValue>(entity =>
         {
             entity.ToTable("ApplicantFormValues", "applicant");
 
@@ -55,55 +73,7 @@ public partial class RegContext : DbContext
                 .HasConstraintName("FK_ApplicantFormValues_FieldOptions");
         });
 
-        modelBuilder.Entity<Applicants>(entity =>
-        {
-            entity.ToTable("Applicants", "applicant");
-
-            entity.Property(e => e.CreatedDate)
-                .HasPrecision(0)
-                .HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.NationalNumber)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.TrackingCode)
-                .HasMaxLength(5)
-                .IsFixedLength();
-        });
-
-        modelBuilder.Entity<FieldOptions>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_FormOptions");
-
-            entity.ToTable("FieldOptions", "field");
-
-            entity.Property(e => e.CreatedDate)
-                .HasPrecision(0)
-                .HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Title).HasMaxLength(50);
-            entity.Property(e => e.Type).HasMaxLength(50);
-            entity.Property(e => e.Value).HasMaxLength(1000);
-
-            entity.HasOne(d => d.Field).WithMany(p => p.FieldOptions)
-                .HasForeignKey(d => d.FieldId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_FieldOptions_Fields");
-        });
-
-        modelBuilder.Entity<FieldTypes>(entity =>
-        {
-            entity.ToTable("FieldTypes", "field");
-
-            entity.Property(e => e.CreatedDate)
-                .HasPrecision(0)
-                .HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Title).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<Fields>(entity =>
+        modelBuilder.Entity<Field>(entity =>
         {
             entity.ToTable("Fields", "field");
 
@@ -124,22 +94,51 @@ public partial class RegContext : DbContext
                 .HasConstraintName("FK_Fields_RegSteps");
         });
 
-        modelBuilder.Entity<RegStepStatuses>(entity =>
+        modelBuilder.Entity<FieldOption>(entity =>
         {
-            entity.ToTable("RegStepStatuses", "reg");
+            entity.HasKey(e => e.Id).HasName("PK_FormOptions");
+
+            entity.ToTable("FieldOptions", "field");
 
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Title).HasMaxLength(50);
+            entity.Property(e => e.Type).HasMaxLength(50);
+            entity.Property(e => e.Value).HasMaxLength(1000);
 
-            entity.HasOne(d => d.RegStep).WithMany(p => p.RegStepStatuses)
-                .HasForeignKey(d => d.RegStepId)
+            entity.HasOne(d => d.Field).WithMany(p => p.FieldOptions)
+                .HasForeignKey(d => d.FieldId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RegStepStatuses_RegSteps");
+                .HasConstraintName("FK_FieldOptions_Fields");
         });
 
-        modelBuilder.Entity<RegSteps>(entity =>
+        modelBuilder.Entity<FieldType>(entity =>
+        {
+            entity.ToTable("FieldTypes", "field");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Title).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Reg>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Registrations");
+
+            entity.ToTable("Regs", "reg");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.EndDate).HasPrecision(0);
+            entity.Property(e => e.StartDate).HasPrecision(0);
+            entity.Property(e => e.Title).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<RegStep>(entity =>
         {
             entity.ToTable("RegSteps", "reg");
 
@@ -159,21 +158,22 @@ public partial class RegContext : DbContext
                 .HasConstraintName("FK_RegSteps_Steps");
         });
 
-        modelBuilder.Entity<Regs>(entity =>
+        modelBuilder.Entity<RegStepStatus>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_Registrations");
-
-            entity.ToTable("Regs", "reg");
+            entity.ToTable("RegStepStatuses", "reg");
 
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.EndDate).HasPrecision(0);
-            entity.Property(e => e.StartDate).HasPrecision(0);
-            entity.Property(e => e.Title).HasMaxLength(100);
+            entity.Property(e => e.Title).HasMaxLength(50);
+
+            entity.HasOne(d => d.RegStep).WithMany(p => p.RegStepStatuses)
+                .HasForeignKey(d => d.RegStepId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RegStepStatuses_RegSteps");
         });
 
-        modelBuilder.Entity<Steps>(entity =>
+        modelBuilder.Entity<Step>(entity =>
         {
             entity.ToTable("Steps", "reg");
 

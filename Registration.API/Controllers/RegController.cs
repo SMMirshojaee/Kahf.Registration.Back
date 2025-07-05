@@ -3,7 +3,7 @@ using Registration.API.Business;
 
 namespace Registration.API.Controllers;
 
-public class RegController(RegBusiness business) : GenericController<RegBusiness, Regs>(business)
+public class RegController(RegBusiness business) : GenericController<RegBusiness, Reg>(business)
 {
 
     [HttpGet]

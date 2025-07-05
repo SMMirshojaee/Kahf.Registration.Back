@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Registration.API.Entity.Models;
 
-public partial class ApplicantFormValues
+public partial class ApplicantFormValue
 {
     public override int Id { get; set; }
 
@@ -19,9 +19,9 @@ public partial class ApplicantFormValues
 
     public bool Deleted { get; set; }
 
-    public virtual Applicants Applicant { get; set; } = null!;
+    public virtual Applicant Applicant { get; set; } = null!;
 
-    public virtual Fields Field { get; set; } = null!;
+    public virtual Field Field { get; set; } = null!;
 
-    public virtual FieldOptions? FieldOption { get; set; }
+    public virtual FieldOption? FieldOption { get; set; }
 }

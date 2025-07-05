@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Registration.API.Entity.Models;
 
-public partial class FieldOptions
+public partial class FieldOption
 {
     public override int Id { get; set; }
 
@@ -17,7 +17,7 @@ public partial class FieldOptions
 
     public override DateTime CreatedDate { get; set; }
 
-    public virtual ICollection<ApplicantFormValues> ApplicantFormValues { get; set; } = new List<ApplicantFormValues>();
+    public virtual ICollection<ApplicantFormValue> ApplicantFormValues { get; set; } = new List<ApplicantFormValue>();
 
-    public virtual Fields Field { get; set; } = null!;
+    public virtual Field Field { get; set; } = null!;
 }

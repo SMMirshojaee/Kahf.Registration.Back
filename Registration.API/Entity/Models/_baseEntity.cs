@@ -6,12 +6,12 @@ public abstract class BaseEntity
     public abstract DateTime CreatedDate { get; set; }
 }
 
-partial class ApplicantFormValues : BaseEntity;
-partial class Applicants : BaseEntity;
-partial class FieldOptions : BaseEntity;
-partial class Fields : BaseEntity;
-partial class FieldTypes : BaseEntity;
-partial class Regs : BaseEntity;
-partial class RegSteps : BaseEntity;
-partial class RegStepStatuses : BaseEntity;
-partial class Steps : BaseEntity;
+partial class ApplicantFormValue : BaseEntity;
+partial class Applicant : BaseEntity;
+partial class FieldOption : BaseEntity;
+partial class Field : BaseEntity;
+partial class FieldType : BaseEntity;
+partial class Reg : BaseEntity;
+partial class RegStep : BaseEntity;
+partial class RegStepStatus : BaseEntity;
+partial class Step : BaseEntity;

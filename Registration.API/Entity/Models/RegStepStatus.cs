@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Registration.API.Entity.Models;
 
-public partial class RegStepStatuses
+public partial class RegStepStatus
 {
     public override int Id { get; set; }
 
@@ -21,5 +21,5 @@ public partial class RegStepStatuses
 
     public override DateTime CreatedDate { get; set; }
 
-    public virtual RegSteps RegStep { get; set; } = null!;
+    public virtual RegStep RegStep { get; set; } = null!;
 }

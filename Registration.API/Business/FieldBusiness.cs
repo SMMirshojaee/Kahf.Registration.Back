@@ -2,9 +2,9 @@
 
 namespace Registration.API.Business
 {
-    public class FieldBusiness(RegContext context) : GenericBusiness<Fields>(context)
+    public class FieldBusiness(RegContext context) : GenericBusiness<Field>(context)
     {
-        public Task<List<Fields>> GetByRegStepId(int regStepId) =>
+        public Task<List<Field>> GetByRegStepId(int regStepId) =>
             Where(e => e.RegStepId == regStepId)
                 .Include(e => e.FieldType)
                 //.Include(e => e.FieldOptions)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Registration.API.Entity.Models;
 
-public partial class RegSteps
+public partial class RegStep
 {
     public override int Id { get; set; }
 
@@ -17,11 +17,11 @@ public partial class RegSteps
 
     public override DateTime CreatedDate { get; set; }
 
-    public virtual ICollection<Fields> Fields { get; set; } = new List<Fields>();
+    public virtual ICollection<Field> Fields { get; set; } = new List<Field>();
 
-    public virtual Regs Reg { get; set; } = null!;
+    public virtual Reg Reg { get; set; } = null!;
 
-    public virtual ICollection<RegStepStatuses> RegStepStatuses { get; set; } = new List<RegStepStatuses>();
+    public virtual ICollection<RegStepStatus> RegStepStatuses { get; set; } = new List<RegStepStatus>();
 
-    public virtual Steps Step { get; set; } = null!;
+    public virtual Step Step { get; set; } = null!;
 }
