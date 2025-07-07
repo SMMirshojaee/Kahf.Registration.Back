@@ -21,5 +21,7 @@ public partial class RegStepStatus
 
     public override DateTime CreatedDate { get; set; }
 
+    public virtual ICollection<Applicant> Applicants { get; set; } = new List<Applicant>();
+
     public virtual RegStep RegStep { get; set; } = null!;
 }

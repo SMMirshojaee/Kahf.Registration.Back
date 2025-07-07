@@ -2,20 +2,44 @@
 global using Registration.API.Entity;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Registration.API.Common;
+using System.Net;
 
 namespace Registration.API.Business;
 
-public class GenericBusiness<T>(RegContext context) where T : BaseEntity
+public class GenericBusiness<T>(RegContext context, IMapper mapper) where T : BaseEntity
 {
     private RegContext Context => context;
-
+    public IMapper Mapper => mapper;
     private IQueryable<T> Command => Context.Set<T>();
     private IQueryable<T> Query => Context.Set<T>().AsNoTracking();
 
     internal Task<List<T>> GetAll() => Query.ToListAsync();
     internal IQueryable<T> Where(Expression<Func<T, bool>> condition, bool track = false) =>
         (track ? Command : Query).Where(condition);
+    internal Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> condition, bool track = false) =>
+        (track ? Command : Query).FirstOrDefaultAsync(condition);
 
-    internal Task<T?> GetById(short id, bool track = false) =>
+    internal Task<T?> GetById(int id, bool track = false) =>
         (track ? Command : Query).FirstOrDefaultAsync(e => e.Id == id);
+
+    internal async Task<ActionReport> Add(T entity)
+    {
+        try
+        {
+            await context.AddAsync(entity);
+            await context.SaveChangesAsync();
+            return ActionReport.Success();
+        }
+        catch (Exception e)
+        {
+            return new ActionReport
+            {
+                Code = HttpStatusCode.InternalServerError,
+                Exception = e,
+                Message = e.Message
+            };
+        }
+    }
 }

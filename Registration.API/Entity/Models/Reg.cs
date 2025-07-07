@@ -19,5 +19,7 @@ public partial class Reg
 
     public override DateTime CreatedDate { get; set; }
 
+    public virtual ICollection<Applicant> Applicants { get; set; } = new List<Applicant>();
+
     public virtual ICollection<RegStep> RegSteps { get; set; } = new List<RegStep>();
 }

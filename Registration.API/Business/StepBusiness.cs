@@ -1,5 +1,7 @@
-﻿namespace Registration.API.Business;
+﻿using AutoMapper;
 
-public class StepBusiness(RegContext context) : GenericBusiness<Step>(context)
+namespace Registration.API.Business;
+
+public class StepBusiness(RegContext context, IMapper mapper) : GenericBusiness<Step>(context, mapper)
 {
 }

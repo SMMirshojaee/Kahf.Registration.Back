@@ -48,6 +48,15 @@ public partial class RegContext : DbContext
             entity.Property(e => e.TrackingCode)
                 .HasMaxLength(5)
                 .IsFixedLength();
+
+            entity.HasOne(d => d.Reg).WithMany(p => p.Applicants)
+                .HasForeignKey(d => d.RegId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Applicants_Regs");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.Applicants)
+                .HasForeignKey(d => d.StatusId)
+                .HasConstraintName("FK_Applicants_RegStepStatuses");
         });
 
         modelBuilder.Entity<ApplicantFormValue>(entity =>
