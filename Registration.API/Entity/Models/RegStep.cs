@@ -13,6 +13,8 @@ public partial class RegStep
 
     public string Title { get; set; } = null!;
 
+    public string? Description { get; set; }
+
     public byte Order { get; set; }
 
     public override DateTime CreatedDate { get; set; }
