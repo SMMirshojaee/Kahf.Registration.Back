@@ -36,6 +36,10 @@ public partial class RegContext : DbContext
         {
             entity.ToTable("Applicants", "applicant");
 
+            entity.HasIndex(e => new { e.RegId, e.PhoneNumber }, "IX_Applicants").IsUnique();
+
+            entity.HasIndex(e => new { e.NationalNumber, e.RegId }, "IX_Applicants_1").IsUnique();
+
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
@@ -43,7 +47,7 @@ public partial class RegContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength();
             entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(10)
+                .HasMaxLength(11)
                 .IsFixedLength();
             entity.Property(e => e.TrackingCode)
                 .HasMaxLength(5)
@@ -143,6 +147,7 @@ public partial class RegContext : DbContext
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.EndDate).HasPrecision(0);
+            entity.Property(e => e.ImageAddress).HasMaxLength(50);
             entity.Property(e => e.StartDate).HasPrecision(0);
             entity.Property(e => e.Title).HasMaxLength(100);
         });

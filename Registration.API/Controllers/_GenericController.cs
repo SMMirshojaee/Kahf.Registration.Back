@@ -24,6 +24,7 @@ namespace Registration.API.Controllers
         private readonly bool _userIsAuthenticated = false;
 
         protected readonly int ApplicantId;
+        protected readonly int RegId;
         protected readonly string NationalCode;
         protected readonly string Mobile;
 
@@ -44,6 +45,7 @@ namespace Registration.API.Controllers
                 {
                     case "Applicant":
                         ApplicantId = int.Parse(user.FindFirst(ClaimTypes.SerialNumber)?.Value!);
+                        RegId = int.Parse(user.FindFirst(ClaimTypes.PrimarySid)?.Value!);
                         NationalCode = user.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
                         Mobile = user.FindFirst(ClaimTypes.MobilePhone)?.Value!;
                         return;

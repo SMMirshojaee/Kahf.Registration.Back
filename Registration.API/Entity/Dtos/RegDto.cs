@@ -5,7 +5,8 @@
         public int Id { get; set; }
 
         public string Title { get; set; } = null!;
-        public string ImageAddress { get; set; } = null!;
+
+        public string? ImageAddress { get; set; } = null!;
 
         public string? Description { get; set; }
 
@@ -27,6 +28,8 @@
         public int StepId { get; set; }
 
         public string Title { get; set; } = null!;
+
+        public string? Description { get; set; }
 
         public byte Order { get; set; }
 

@@ -9,6 +9,8 @@ public partial class Reg
 
     public string Title { get; set; } = null!;
 
+    public string? ImageAddress { get; set; }
+
     public string? Description { get; set; }
 
     public DateTime StartDate { get; set; }
