@@ -1,1 +1,1 @@
-﻿global using System;
+﻿global using static Registration.API.Common.Common;
