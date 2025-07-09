@@ -19,4 +19,8 @@ public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSet
     [AllowAnonymous]
     public async Task<IActionResult> SingIn(int regId, SigninDto signinForm)
         => Status(await Business.SingIn(regId, signinForm.NationalCode, signinForm.Mobile, signinForm.TrackingCode, AppSetting));
+
+    [HttpGet]
+    public async Task<IActionResult> GetStatus() =>
+        Ok(await Business.GetStatus(ApplicantId));
 }

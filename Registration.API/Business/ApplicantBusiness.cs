@@ -66,7 +66,7 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
         [
             new(ClaimTypes.Actor, "Applicant"),
             new(ClaimTypes.SerialNumber, applicantId.ToString()),
-            new(ClaimTypes.PrimarySid, applicantId.ToString()),
+            new(ClaimTypes.PrimarySid, regId.ToString()),
             new(ClaimTypes.NameIdentifier, nationalCode),
             new(ClaimTypes.MobilePhone, mobile)
         ];
@@ -86,4 +86,20 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
         };
         return tokenDto;
     }
+
+    public  Task<ApplicantDto?> GetStatus(int applicantId)
+        =>
+            Where(e => e.Id == applicantId)
+                .Select(e => new ApplicantDto
+                {
+                    StatusId = e.StatusId,
+                    CreatedDate = e.CreatedDate,
+                    RegStepId = e.Status != null ? e.Status.RegStepId : null,
+                    Title = e.Status != null ? e.Status.Title : null,
+                    IsAccepted = e.Status != null ? e.Status.IsAccepted : null,
+                    IsNotChecked = e.Status != null ? e.Status.IsNotChecked : null,
+                    IsRejected = e.Status != null ? e.Status.IsRejected : null,
+                    IsReserved = e.Status != null ? e.Status.IsReserved : null,
+                })
+                .FirstOrDefaultAsync();
 }
