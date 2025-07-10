@@ -11,6 +11,8 @@ public partial class ApplicantFormValue
 
     public int ApplicantId { get; set; }
 
+    public int RegStepId { get; set; }
+
     public int FieldId { get; set; }
 
     public string? Value { get; set; }

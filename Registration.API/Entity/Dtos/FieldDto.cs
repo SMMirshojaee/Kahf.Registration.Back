@@ -8,6 +8,8 @@
 
         public int FieldTypeId { get; set; }
 
+        public FieldTypeDto FieldType { get; set; } = null!;
+
         public short Order { get; set; }
 
         public string Title { get; set; } = null!;
