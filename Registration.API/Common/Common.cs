@@ -35,6 +35,10 @@ public class ActionReport<T> : ActionReport
         Message = report.Message,
         Exception = report.Exception
     };
+    public new static ActionReport<T> UnAuthorize() => new()
+    {
+        Code = HttpStatusCode.Unauthorized,
+    };
 }
 public class ActionReport
 {
@@ -59,6 +63,10 @@ public class ActionReport
         Code = report.Code,
         Message = report.Message,
         Exception = report.Exception
+    };
+    public static ActionReport UnAuthorize() => new()
+    {
+        Code = HttpStatusCode.Unauthorized,
     };
 }
 

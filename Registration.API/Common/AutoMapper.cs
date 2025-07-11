@@ -17,6 +17,7 @@ namespace Registration.API.Common
             CreateMap<RegStepStatus, RegStepStatusDto>().ReverseMap();
 
             CreateMap<ApplicantFormValue, ApplicantFormValueDto>().ReverseMap();
+            CreateMap<Applicant, MemberInfoDto>().ReverseMap();
         }
     }
 }

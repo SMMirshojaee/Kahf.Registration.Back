@@ -21,6 +21,8 @@ public partial class RegStep
 
     public byte? MemberLimit { get; set; }
 
+    public string? AddMemberDescription { get; set; }
+
     public override DateTime CreatedDate { get; set; }
 
     public virtual ICollection<Field> Fields { get; set; } = new List<Field>();

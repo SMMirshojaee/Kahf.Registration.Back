@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
@@ -10,7 +11,7 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Business;
 
-public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusiness<Applicant>(context, mapper)
+public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext context, IMapper mapper) : GenericBusiness<Applicant>(context, mapper)
 {
     public async Task<ActionReport<TokenDto>> Signup(int regId, string firstName, string lastName, string nationalCode, string mobile, AppSettings appSetting)
     {
@@ -100,10 +101,48 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
                     CreatedDate = e.CreatedDate,
                     RegStepId = e.Status != null ? e.Status.RegStepId : null,
                     Title = e.Status != null ? e.Status.Title : null,
+                    IsWaiting = e.Status != null ? e.Status.IsWaiting : null,
                     IsAccepted = e.Status != null ? e.Status.IsAccepted : null,
                     IsNotChecked = e.Status != null ? e.Status.IsNotChecked : null,
                     IsRejected = e.Status != null ? e.Status.IsRejected : null,
                     IsReserved = e.Status != null ? e.Status.IsReserved : null,
                 })
                 .FirstOrDefaultAsync();
+
+    public Task<List<Applicant>> GetMembers(int applicantId)
+        => Where(ent => ent.LeaderId == applicantId)
+            .OrderByDescending(e=>e.Id)
+            .ToListAsync();
+
+    public async Task<ActionReport<MemberInfoDto>> AddMember(int applicantId, int regStepId, string firstName, string lastName, string nationalCode, string mobile)
+    {
+        RegStep? regStep = await regStepBusiness.GetById(regStepId);
+        byte? limit = regStep!.MemberLimit;
+        if (limit > 0)
+        {
+            Applicant? sameApplicant =
+                await FirstOrDefaultAsync(e => e.RegId == regStep.RegId && e.NationalNumber == nationalCode);
+            if (sameApplicant is not null)
+                return ActionReport<MemberInfoDto>.Error(HttpStatusCode.Conflict);
+            var membersCount = await Where(e => e.LeaderId == applicantId).CountAsync();
+            if (membersCount >= limit)
+                return ActionReport<MemberInfoDto>.Error(HttpStatusCode.InsufficientStorage);
+            
+            Applicant newMember = new()
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                LeaderId = applicantId,
+                NationalNumber = nationalCode,
+                PhoneNumber = mobile,
+                RegId = regStep.RegId,
+
+            };
+
+            var report = await Add(newMember);
+            if (report.Successful)
+                return ActionReport<MemberInfoDto>.Success(Mapper.Map<MemberInfoDto>(newMember));
+        }
+        return ActionReport<MemberInfoDto>.Error(HttpStatusCode.Forbidden);
+    }
 }

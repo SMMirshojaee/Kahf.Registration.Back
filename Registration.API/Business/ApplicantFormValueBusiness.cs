@@ -6,13 +6,26 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Business
 {
-    public class ApplicantFormValueBusiness(RegContext context, IMapper mapper) : GenericBusiness<ApplicantFormValue>(context, mapper)
+    public class ApplicantFormValueBusiness(ApplicantBusiness applicantBusiness, RegContext context, IMapper mapper) : GenericBusiness<ApplicantFormValue>(context, mapper)
     {
-        public Task<List<ApplicantFormValue>> GetByApplicantIdAndRegStepId(int applicantId, int regStepId)
-        => Where(e => e.ApplicantId == applicantId && e.RegStepId == regStepId)
+        public async Task<List<ApplicantFormValue>> GetByApplicantIdAndRegStepId(int applicantId, int regStepId, int? memberId)
+        {
+            if (memberId.HasValue)
+            {
+                Applicant? member = await applicantBusiness.FirstOrDefaultAsync(e => e.Id == memberId);
+                if (member is null || member.LeaderId != applicantId)
+                    return new List<ApplicantFormValue>();
+                return await Where(e => e.ApplicantId == memberId && e.RegStepId == regStepId)
+                    .Include(e => e.Field)
+                    .Include(e => e.FieldOption)
+                    .ToListAsync();
+            }
+
+            return await Where(e => e.ApplicantId == applicantId && e.RegStepId == regStepId)
                 .Include(e => e.Field)
                 .Include(e => e.FieldOption)
                 .ToListAsync();
+        }
 
         public async Task<bool> HasAccess(int applicantId, int regStepId)
         {
@@ -29,8 +42,8 @@ namespace Registration.API.Business
             try
             {
 
-                 await context.Database.ExecuteSqlInterpolatedAsync(
-                    $"UPDATE applicant.ApplicantFormValues SET Deleted=1 WHERE ApplicantId={applicantId} AND RegStepId={regStepId}");
+                await context.Database.ExecuteSqlInterpolatedAsync(
+                   $"UPDATE applicant.ApplicantFormValues SET Deleted=1 WHERE ApplicantId={applicantId} AND RegStepId={regStepId}");
 
                 values.ForEach(e =>
                 {

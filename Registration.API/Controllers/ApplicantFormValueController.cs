@@ -13,43 +13,67 @@ public class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper 
 {
 
 
-    [HttpGet("{regStepId}")]
-    public async Task<IActionResult> GetByRegStepId(int regStepId) =>
+    [HttpGet("{regStepId}/{memberId?}")]
+    public async Task<IActionResult> GetByRegStepId(int regStepId, int? memberId = null) =>
         Ok(Mapper.Map<List<ApplicantFormValueDto>>(
-            await Business.GetByApplicantIdAndRegStepId(ApplicantId, regStepId)));
+            await Business.GetByApplicantIdAndRegStepId(ApplicantId, regStepId, memberId)));
 
-    [HttpPost("{applicantId}/{regStepId}")]
-    public async Task<IActionResult> Insert(int applicantId, int regStepId,
-        [FromBody] List<ApplicantFormValueDto> values)
+    [HttpPost("{regStepId}/{memberId?}")]
+    public async Task<IActionResult> Insert(int regStepId,
+        [FromBody] List<ApplicantFormValueDto> values, [FromRoute] int? memberId = null)
     {
-        if (applicantId != ApplicantId)
-            return Forbid();
-        if (!await Business.HasAccess(applicantId, regStepId))
+        if (!await Business.HasAccess(ApplicantId, regStepId))
             return Unauthorized();
-        ActionReport report = await Business.Insert(applicantId, regStepId, values);
+
+        var realApplicantId = ApplicantId;
+
+        if (memberId is not null)
+        {
+            Applicant? member = await applicantBusiness.GetById(memberId.Value);
+            if (member is null || member.LeaderId != ApplicantId)
+                return Unauthorized();
+
+            realApplicantId = memberId.Value;
+
+            values.ForEach(value => value.ApplicantId = memberId.Value);
+        }
+
+        ActionReport report = await Business.Insert(realApplicantId, regStepId, values);
         if (report.Successful)
         {
-            RegStep? regStep = await regStepBusiness.GetById(regStepId);
-            Applicant? applicant = await applicantBusiness.GetById(ApplicantId, true);
-            if (regStep?.CreateTrackingCode == true && string.IsNullOrEmpty(applicant?.TrackingCode))
+            RegStep? regStep = await regStepBusiness.GetByIdWithStatuses(regStepId);
+            Applicant? applicant = await applicantBusiness.GetById(realApplicantId, true);
+            if (regStep?.CreateTrackingCode == true && !memberId.HasValue && string.IsNullOrEmpty(applicant?.TrackingCode))
             {
                 applicant.TrackingCode = CreateRandomString(5, true);
-                report = await applicantBusiness.SaveChanges();
-                if (report.Successful)
-                    return Ok(applicant.TrackingCode);
             }
+            RegStepStatus? notCheckedStatus = regStep?.RegStepStatuses.FirstOrDefault(e => e.IsNotChecked);
+            applicant.StatusId = notCheckedStatus?.Id;
+            report = await applicantBusiness.SaveChanges();
+            if (report.Successful)
+                return Ok(applicant.TrackingCode);
         }
         return Status(report);
     }
 
     [HttpPost("{fileName}")]
-    public async Task<IActionResult> Upload(string fileName, [FromForm] IFormFile image)
+    public async Task<IActionResult> Upload(string fileName, [FromForm] IFormFile image, [FromRoute] int? memberId = null)
     {
         if (image == null || image.Length == 0)
             return BadRequest("تصویری ارسال نشده");
         try
         {
-            string directory = Path.Combine(Directory.GetCurrentDirectory(), AppSetting.RepositoryAddress, ApplicantId.ToString());
+            int realApplicantId = ApplicantId;
+            if (memberId is not null)
+            {
+                Applicant? member = await applicantBusiness.GetById(memberId.Value);
+                if (member is null || member.LeaderId != ApplicantId)
+                    return Unauthorized();
+
+                realApplicantId = memberId.Value;
+
+            }
+            string directory = Path.Combine(Directory.GetCurrentDirectory(), AppSetting.RepositoryAddress, realApplicantId.ToString());
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 

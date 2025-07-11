@@ -162,6 +162,7 @@ public partial class RegContext : DbContext
         {
             entity.ToTable("RegSteps", "reg");
 
+            entity.Property(e => e.AddMemberDescription).HasMaxLength(1000);
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");

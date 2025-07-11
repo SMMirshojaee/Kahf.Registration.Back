@@ -73,23 +73,13 @@ namespace Registration.API.Controllers
         {
             if (report.Successful)
                 return Ok(report.Output);
-            if (report.Code == HttpStatusCode.Conflict)
-                return StatusCode((int)HttpStatusCode.Conflict, report.Message);
-            if (report.Code == HttpStatusCode.NotFound)
-                return StatusCode((int)HttpStatusCode.NotFound, report.Message);
-            return StatusCode((int)HttpStatusCode.InternalServerError, report.Message);
+            return StatusCode((int)report.Code, report.Message);
         }
         protected IActionResult Status(ActionReport report)
         {
             if (report.Successful)
                 return Ok();
-            if (report.Code == HttpStatusCode.Conflict)
-                return StatusCode((int)HttpStatusCode.Conflict, report.Message);
-            if (report.Code == HttpStatusCode.NotFound)
-                return StatusCode((int)HttpStatusCode.NotFound, report.Message);
-            if (report.Code == HttpStatusCode.Ambiguous)
-                return StatusCode((int)HttpStatusCode.Ambiguous, report.Message);
-            return StatusCode((int)HttpStatusCode.InternalServerError, report.Message);
+            return StatusCode((int)report.Code, report.Message);
         }
     }
 }

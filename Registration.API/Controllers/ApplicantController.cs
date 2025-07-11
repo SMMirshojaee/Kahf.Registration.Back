@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -23,4 +24,13 @@ public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSet
     [HttpGet]
     public async Task<IActionResult> GetStatus() =>
         Ok(await Business.GetStatus(ApplicantId));
+
+    [HttpGet]
+    public async Task<IActionResult> GetMembers() =>
+        Ok(Mapper.Map<List<MemberInfoDto>>(await Business.GetMembers(ApplicantId)));
+
+    [HttpPost("{regStepId}")]
+    public async Task<IActionResult> AddMember(int regStepId, SignupDto addMemberForm)
+    => Status(await Business.AddMember(ApplicantId, regStepId, addMemberForm.FirstName, addMemberForm.LastName, addMemberForm.NationalCode, addMemberForm.Mobile));
+
 }
