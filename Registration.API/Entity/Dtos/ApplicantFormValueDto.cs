@@ -6,6 +6,8 @@ public class ApplicantFormValueDto
 
     public int ApplicantId { get; set; }
 
+    public int RegStepId { get; set; }
+
     public int FieldId { get; set; }
 
     public string? Value { get; set; }
@@ -14,7 +16,4 @@ public class ApplicantFormValueDto
 
     public bool Deleted { get; set; }
 
-    public virtual FieldDto Field { get; set; } = null!;
-
-    public virtual FieldOptionDto? FieldOption { get; set; }
 }

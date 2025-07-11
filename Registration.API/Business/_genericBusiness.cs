@@ -42,4 +42,35 @@ public class GenericBusiness<T>(RegContext context, IMapper mapper) where T : Ba
             };
         }
     }
+    internal async Task<ActionReport> Add(List<T> entities)
+    {
+        try
+        {
+            await context.AddRangeAsync(entities);
+            await context.SaveChangesAsync();
+            return ActionReport.Success();
+        }
+        catch (Exception e)
+        {
+            return new ActionReport
+            {
+                Code = HttpStatusCode.InternalServerError,
+                Exception = e,
+                Message = e.Message
+            };
+        }
+    }
+
+    internal async Task<ActionReport> SaveChanges()
+    {
+        try
+        {
+            await Context.SaveChangesAsync();
+            return ActionReport.Success();
+        }
+        catch (Exception e)
+        {
+            return ActionReport.Error(HttpStatusCode.InternalServerError, "خطا در ثبت تغییرات", e);
+        }
+    }
 }

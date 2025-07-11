@@ -11,6 +11,7 @@ public class AppSettings
     public string Issuer { get; set; } = null!;
     public string Audience { get; set; } = null!;
     public int DefaultRegId { get; set; }
+    public string RepositoryAddress { get; set; } = null!;
 }
 
 public class ActionReport<T> : ActionReport
@@ -64,17 +65,18 @@ public class ActionReport
 public static class Common
 {
     private static readonly char[] _chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+    private static readonly char[] _numbers = "1234567890".ToCharArray();
 
-    public static string CreateRandomString(byte length)
+    public static string CreateRandomString(byte length, bool numbersOnly = false)
     {
-        var data = new byte[length];
-        using var rng = RandomNumberGenerator.Create();
+        byte[] data = new byte[length];
+        using RandomNumberGenerator rng = RandomNumberGenerator.Create();
         rng.GetBytes(data);
-
-        var result = new StringBuilder(length);
-        foreach (var b in data)
+        char[] source = numbersOnly ? _numbers : _chars;
+        StringBuilder result = new StringBuilder(length);
+        foreach (byte b in data)
         {
-            result.Append(_chars[b % _chars.Length]);
+            result.Append(source[b % source.Length]);
         }
 
         return result.ToString();

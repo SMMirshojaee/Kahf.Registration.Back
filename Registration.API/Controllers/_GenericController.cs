@@ -65,6 +65,10 @@ namespace Registration.API.Controllers
             }
         }
 
+        protected IActionResult InternalServerError()
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
         protected IActionResult Status<T>(ActionReport<T> report)
         {
             if (report.Successful)
@@ -73,6 +77,18 @@ namespace Registration.API.Controllers
                 return StatusCode((int)HttpStatusCode.Conflict, report.Message);
             if (report.Code == HttpStatusCode.NotFound)
                 return StatusCode((int)HttpStatusCode.NotFound, report.Message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, report.Message);
+        }
+        protected IActionResult Status(ActionReport report)
+        {
+            if (report.Successful)
+                return Ok();
+            if (report.Code == HttpStatusCode.Conflict)
+                return StatusCode((int)HttpStatusCode.Conflict, report.Message);
+            if (report.Code == HttpStatusCode.NotFound)
+                return StatusCode((int)HttpStatusCode.NotFound, report.Message);
+            if (report.Code == HttpStatusCode.Ambiguous)
+                return StatusCode((int)HttpStatusCode.Ambiguous, report.Message);
             return StatusCode((int)HttpStatusCode.InternalServerError, report.Message);
         }
     }
