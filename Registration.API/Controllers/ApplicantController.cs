@@ -13,7 +13,7 @@ public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSet
     [HttpPost("{regId}")]
     [AllowAnonymous]
     public async Task<IActionResult> Signup(int regId, SignupDto signupForm)
-        => Status(await Business.Signup(regId, signupForm.NationalCode, signupForm.Mobile, AppSetting));
+        => Status(await Business.Signup(regId, signupForm.FirstName, signupForm.LastName, signupForm.NationalCode, signupForm.Mobile, AppSetting));
 
     [HttpPut("{regId}")]
     [AllowAnonymous]

@@ -19,6 +19,8 @@ public partial class RegStep
 
     public byte Order { get; set; }
 
+    public byte? MemberLimit { get; set; }
+
     public override DateTime CreatedDate { get; set; }
 
     public virtual ICollection<Field> Fields { get; set; } = new List<Field>();

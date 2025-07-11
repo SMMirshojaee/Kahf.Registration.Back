@@ -17,9 +17,19 @@ public partial class Applicant
 
     public string PhoneNumber { get; set; } = null!;
 
+    public string FirstName { get; set; } = null!;
+
+    public string LastName { get; set; } = null!;
+
+    public int? LeaderId { get; set; }
+
     public string? TrackingCode { get; set; }
 
     public virtual ICollection<ApplicantFormValue> ApplicantFormValues { get; set; } = new List<ApplicantFormValue>();
+
+    public virtual ICollection<Applicant> InverseLeader { get; set; } = new List<Applicant>();
+
+    public virtual Applicant? Leader { get; set; }
 
     public virtual Reg Reg { get; set; } = null!;
 

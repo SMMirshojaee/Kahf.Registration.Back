@@ -12,7 +12,7 @@ namespace Registration.API.Business;
 
 public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusiness<Applicant>(context, mapper)
 {
-    public async Task<ActionReport<TokenDto>> Signup(int regId, string nationalCode, string mobile, AppSettings appSetting)
+    public async Task<ActionReport<TokenDto>> Signup(int regId, string firstName, string lastName, string nationalCode, string mobile, AppSettings appSetting)
     {
         Applicant? applicant = await FirstOrDefaultAsync(e =>
             e.RegId == regId && (e.NationalNumber == nationalCode || e.PhoneNumber == mobile));
@@ -22,13 +22,15 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
                 return ActionReport<TokenDto>.Error(HttpStatusCode.Conflict, "کد ملی یا شماره موبایل تکراری است. به صفحه پیگیری مراجعه بفرمایید");
             else
             {
-                token = GenerateJwtTokenForApplicant(regId, applicant.Id, nationalCode, mobile, appSetting);
+                token = GenerateJwtTokenForApplicant(regId, firstName, lastName, applicant.Id, nationalCode, mobile, appSetting);
                 return ActionReport<TokenDto>.Success(token);
             }
 
 
         applicant = new Applicant
         {
+            FirstName = firstName,
+            LastName = lastName,
             RegId = regId,
             PhoneNumber = mobile,
             NationalNumber = nationalCode,
@@ -38,7 +40,7 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
         {
             return ActionReport<TokenDto>.Error(report);
         }
-        token = GenerateJwtTokenForApplicant(regId, applicant.Id, nationalCode, mobile, appSetting);
+        token = GenerateJwtTokenForApplicant(regId, firstName, lastName, applicant.Id, nationalCode, mobile, appSetting);
         return ActionReport<TokenDto>.Success(token);
     }
     public async Task<ActionReport<TokenDto>> SingIn(int regId, string nationalCode, string mobile, string trackingCode, AppSettings appSetting)
@@ -52,12 +54,12 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
         if (applicant is null)
             return ActionReport<TokenDto>.Error(HttpStatusCode.NotFound, "اطلاعات شما یافت نشد");
 
-        TokenDto token = GenerateJwtTokenForApplicant(regId, applicant.Id, nationalCode, mobile, appSetting);
+        TokenDto token = GenerateJwtTokenForApplicant(regId, applicant.FirstName, applicant.LastName, applicant.Id, nationalCode, mobile, appSetting);
         return ActionReport<TokenDto>.Success(token);
     }
 
 
-    private TokenDto GenerateJwtTokenForApplicant(int regId, int applicantId, string nationalCode, string mobile, AppSettings appSetting)
+    private TokenDto GenerateJwtTokenForApplicant(int regId, string firstName, string lastName, int applicantId, string nationalCode, string mobile, AppSettings appSetting)
     {
         SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSetting.SecretKey));
         SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -65,6 +67,8 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
         Claim[] claims =
         [
             new(ClaimTypes.Actor, "Applicant"),
+            new(ClaimTypes.Name, firstName),
+            new(ClaimTypes.GivenName, lastName),
             new(ClaimTypes.SerialNumber, applicantId.ToString()),
             new(ClaimTypes.PrimarySid, regId.ToString()),
             new(ClaimTypes.NameIdentifier, nationalCode),
@@ -87,7 +91,7 @@ public class ApplicantBusiness(RegContext context, IMapper mapper) : GenericBusi
         return tokenDto;
     }
 
-    public  Task<ApplicantDto?> GetStatus(int applicantId)
+    public Task<ApplicantDto?> GetStatus(int applicantId)
         =>
             Where(e => e.Id == applicantId)
                 .Select(e => new ApplicantDto

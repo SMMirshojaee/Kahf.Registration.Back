@@ -21,6 +21,10 @@ public partial class Field
 
     public bool Hidden { get; set; }
 
+    public bool ForLeader { get; set; }
+
+    public bool ForMember { get; set; }
+
     public override DateTime CreatedDate { get; set; }
 
     public virtual ICollection<ApplicantFormValue> ApplicantFormValues { get; set; } = new List<ApplicantFormValue>();

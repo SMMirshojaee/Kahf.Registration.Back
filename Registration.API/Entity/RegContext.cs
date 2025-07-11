@@ -43,6 +43,8 @@ public partial class RegContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.FirstName).HasMaxLength(50);
+            entity.Property(e => e.LastName).HasMaxLength(100);
             entity.Property(e => e.NationalNumber)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -52,6 +54,10 @@ public partial class RegContext : DbContext
             entity.Property(e => e.TrackingCode)
                 .HasMaxLength(5)
                 .IsFixedLength();
+
+            entity.HasOne(d => d.Leader).WithMany(p => p.InverseLeader)
+                .HasForeignKey(d => d.LeaderId)
+                .HasConstraintName("FK_Applicants_Applicants1");
 
             entity.HasOne(d => d.Reg).WithMany(p => p.Applicants)
                 .HasForeignKey(d => d.RegId)
@@ -160,6 +166,7 @@ public partial class RegContext : DbContext
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.MemberLimit).HasDefaultValue((byte)0);
             entity.Property(e => e.Title).HasMaxLength(100);
 
             entity.HasOne(d => d.Reg).WithMany(p => p.RegSteps)
