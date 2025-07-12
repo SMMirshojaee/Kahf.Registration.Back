@@ -14,6 +14,7 @@ public class GenericBusiness<T>(RegContext context, IMapper mapper) where T : Ba
     public IMapper Mapper => mapper;
     private IQueryable<T> Command => Context.Set<T>();
     private IQueryable<T> Query => Context.Set<T>().AsNoTracking();
+    private DbSet<T> Entity => Context.Set<T>();
 
     internal Task<List<T>> GetAll() => Query.ToListAsync();
     internal IQueryable<T> Where(Expression<Func<T, bool>> condition, bool track = false) =>
@@ -61,6 +62,22 @@ public class GenericBusiness<T>(RegContext context, IMapper mapper) where T : Ba
         }
     }
 
+    internal async Task<ActionReport> Delete(int id)
+    {
+        try
+        {
+            T? entity = await FirstOrDefaultAsync(e => e.Id == id);
+            if (entity is null)
+                return ActionReport.Error(HttpStatusCode.NotFound);
+            Entity.Remove(entity);
+            return await SaveChanges();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
     internal async Task<ActionReport> SaveChanges()
     {
         try

@@ -111,7 +111,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
 
     public Task<List<Applicant>> GetMembers(int applicantId)
         => Where(ent => ent.LeaderId == applicantId)
-            .OrderByDescending(e=>e.Id)
+            .OrderByDescending(e => e.Id)
             .ToListAsync();
 
     public async Task<ActionReport<MemberInfoDto>> AddMember(int applicantId, int regStepId, string firstName, string lastName, string nationalCode, string mobile)
@@ -127,7 +127,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             var membersCount = await Where(e => e.LeaderId == applicantId).CountAsync();
             if (membersCount >= limit)
                 return ActionReport<MemberInfoDto>.Error(HttpStatusCode.InsufficientStorage);
-            
+
             Applicant newMember = new()
             {
                 FirstName = firstName,
@@ -144,5 +144,14 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
                 return ActionReport<MemberInfoDto>.Success(Mapper.Map<MemberInfoDto>(newMember));
         }
         return ActionReport<MemberInfoDto>.Error(HttpStatusCode.Forbidden);
+    }
+
+    public async Task<ActionReport> RemoveMember(int memberId)
+    {
+        var member = await FirstOrDefaultAsync(e => e.Id == memberId);
+        if (member is null)
+            return ActionReport.Error(HttpStatusCode.NotFound);
+        var report = await Delete(memberId);
+        return report;
     }
 }

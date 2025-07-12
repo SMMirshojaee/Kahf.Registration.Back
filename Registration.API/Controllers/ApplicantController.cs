@@ -33,4 +33,17 @@ public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSet
     public async Task<IActionResult> AddMember(int regStepId, SignupDto addMemberForm)
     => Status(await Business.AddMember(ApplicantId, regStepId, addMemberForm.FirstName, addMemberForm.LastName, addMemberForm.NationalCode, addMemberForm.Mobile));
 
+    [HttpDelete("{memberId}")]
+    public async Task<IActionResult> RemoveMember(int memberId)
+    {
+        Applicant? member = await Business.GetById(memberId);
+        if (member is null)
+            return NotFound();
+        if (member.LeaderId != ApplicantId)
+            return Unauthorized();
+
+        var report = await Business.RemoveMember(memberId);
+        return Status(report);
+    }
+
 }

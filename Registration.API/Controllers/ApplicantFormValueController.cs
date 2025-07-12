@@ -56,7 +56,7 @@ public class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper 
         return Status(report);
     }
 
-    [HttpPost("{fileName}")]
+    [HttpPost("{fileName}/{memberId?}")]
     public async Task<IActionResult> Upload(string fileName, [FromForm] IFormFile image, [FromRoute] int? memberId = null)
     {
         if (image == null || image.Length == 0)
