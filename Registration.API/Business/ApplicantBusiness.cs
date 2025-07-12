@@ -124,7 +124,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
                 await FirstOrDefaultAsync(e => e.RegId == regStep.RegId && e.NationalNumber == nationalCode);
             if (sameApplicant is not null)
                 return ActionReport<MemberInfoDto>.Error(HttpStatusCode.Conflict);
-            var membersCount = await Where(e => e.LeaderId == applicantId).CountAsync();
+            int membersCount = await Where(e => e.LeaderId == applicantId).CountAsync();
             if (membersCount >= limit)
                 return ActionReport<MemberInfoDto>.Error(HttpStatusCode.InsufficientStorage);
 
@@ -139,7 +139,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
 
             };
 
-            var report = await Add(newMember);
+            ActionReport report = await Add(newMember);
             if (report.Successful)
                 return ActionReport<MemberInfoDto>.Success(Mapper.Map<MemberInfoDto>(newMember));
         }
@@ -148,10 +148,10 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
 
     public async Task<ActionReport> RemoveMember(int memberId)
     {
-        var member = await FirstOrDefaultAsync(e => e.Id == memberId);
+        Applicant? member = await FirstOrDefaultAsync(e => e.Id == memberId);
         if (member is null)
             return ActionReport.Error(HttpStatusCode.NotFound);
-        var report = await Delete(memberId);
+        ActionReport report = await Delete(memberId);
         return report;
     }
 }

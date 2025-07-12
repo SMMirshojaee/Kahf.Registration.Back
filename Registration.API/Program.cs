@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Registration.API.Common;
 
@@ -120,6 +121,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, appSetting.RepositoryAddress)),
+    RequestPath = "/Repository"
+});
 app.Run();
 
 IConfigurationRoot CreateConfiguration()

@@ -42,7 +42,7 @@ public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSet
         if (member.LeaderId != ApplicantId)
             return Unauthorized();
 
-        var report = await Business.RemoveMember(memberId);
+        ActionReport report = await Business.RemoveMember(memberId);
         return Status(report);
     }
 
