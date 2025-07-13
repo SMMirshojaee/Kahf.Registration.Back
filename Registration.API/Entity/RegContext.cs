@@ -36,8 +36,6 @@ public partial class RegContext : DbContext
         {
             entity.ToTable("Applicants", "applicant");
 
-            entity.HasIndex(e => new { e.RegId, e.PhoneNumber }, "IX_Applicants").IsUnique();
-
             entity.HasIndex(e => new { e.NationalNumber, e.RegId }, "IX_Applicants_1").IsUnique();
 
             entity.Property(e => e.CreatedDate)
@@ -79,7 +77,6 @@ public partial class RegContext : DbContext
 
             entity.HasOne(d => d.Applicant).WithMany(p => p.ApplicantFormValues)
                 .HasForeignKey(d => d.ApplicantId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ApplicantFormValues_Applicants");
 
             entity.HasOne(d => d.Field).WithMany(p => p.ApplicantFormValues)
@@ -188,6 +185,7 @@ public partial class RegContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.PublicMessage).HasMaxLength(1000);
             entity.Property(e => e.Title).HasMaxLength(50);
 
             entity.HasOne(d => d.RegStep).WithMany(p => p.RegStepStatuses)

@@ -11,6 +11,8 @@ public partial class RegStepStatus
 
     public string Title { get; set; } = null!;
 
+    public string? PublicMessage { get; set; }
+
     public bool IsWaiting { get; set; }
 
     public bool IsNotChecked { get; set; }

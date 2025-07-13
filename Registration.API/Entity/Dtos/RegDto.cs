@@ -47,6 +47,8 @@
 
         public string Title { get; set; } = null!;
 
+        public string PublicMessage { get; set; } = null!;
+
         public bool IsWaiting { get; set; }
         public bool IsNotChecked { get; set; }
 
