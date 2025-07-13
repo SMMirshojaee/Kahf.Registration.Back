@@ -25,7 +25,7 @@ public class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper 
         if (!await Business.HasAccess(ApplicantId, regStepId))
             return Unauthorized();
 
-        var realApplicantId = ApplicantId;
+        int realApplicantId = ApplicantId;
 
         if (memberId is not null)
         {
@@ -47,8 +47,13 @@ public class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper 
             {
                 applicant.TrackingCode = CreateRandomString(5, true);
             }
-            RegStepStatus? notCheckedStatus = regStep?.RegStepStatuses.FirstOrDefault(e => e.IsNotChecked);
-            applicant.StatusId = notCheckedStatus?.Id;
+
+            RegStepStatus? startStatus;
+            if (regStep?.MemberLimit > 0)
+                startStatus = regStep?.RegStepStatuses.FirstOrDefault(e => e.IsWaiting);
+            else
+                startStatus = regStep?.RegStepStatuses.FirstOrDefault(e => e.IsNotChecked);
+            applicant.StatusId = startStatus?.Id;
             report = await applicantBusiness.SaveChanges();
             if (report.Successful)
                 return Ok(applicant.TrackingCode);

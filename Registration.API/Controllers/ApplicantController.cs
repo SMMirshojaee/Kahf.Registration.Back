@@ -1,7 +1,9 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Registration.API.Business;
 using Registration.API.Common;
@@ -9,7 +11,7 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Controllers;
 
-public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
+public class ApplicantController(ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness RegStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
 {
     [HttpPost("{regId}")]
     [AllowAnonymous]
@@ -44,6 +46,25 @@ public class ApplicantController(ApplicantBusiness b, IMapper m, IOptions<AppSet
 
         ActionReport report = await Business.RemoveMember(memberId);
         return Status(report);
+    }
+
+    [HttpPut("{regStepId}")]
+    public async Task<IActionResult> FinishFormStep(int regStepId)
+    {
+        Applicant? applicant = await Business.GetById(ApplicantId, true);
+        if (applicant is null) return NotFound();
+        RegStep? regStep = await RegStepBusiness.GetByIdWithStatuses(regStepId);
+        if (regStep is null) return NotFound();
+        bool hasAnyAnswer = await applicantFormValueBusiness.Where(e => e.ApplicantId == ApplicantId
+                                                                           && !e.Deleted).AnyAsync();
+
+        if (!hasAnyAnswer)
+            return StatusCode((int)HttpStatusCode.Forbidden);
+        
+        RegStepStatus? notCheckedStatus = regStep.RegStepStatuses.FirstOrDefault(e => e.IsNotChecked);
+        if (notCheckedStatus is null) return NotFound();
+        applicant.StatusId = notCheckedStatus.Id;
+        return Status(await Business.SaveChanges());
     }
 
 }
