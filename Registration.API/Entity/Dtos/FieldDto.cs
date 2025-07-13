@@ -33,7 +33,7 @@
 
         public string Type { get; set; } = null!;
 
-        public string Value { get; set; } = null!;
+        public string? Value { get; set; }
     }
 
     public class FieldTypeDto

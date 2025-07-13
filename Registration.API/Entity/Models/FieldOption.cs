@@ -13,7 +13,7 @@ public partial class FieldOption
 
     public string Type { get; set; } = null!;
 
-    public string Value { get; set; } = null!;
+    public string? Value { get; set; }
 
     public override DateTime CreatedDate { get; set; }
 
