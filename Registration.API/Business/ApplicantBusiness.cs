@@ -18,15 +18,16 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         Applicant? applicant = await FirstOrDefaultAsync(e =>
             e.RegId == regId && (e.NationalNumber == nationalCode || e.PhoneNumber == mobile));
         TokenDto token;
+
         if (applicant is not null)
-            if (!string.IsNullOrEmpty(applicant.TrackingCode))
-                return ActionReport<TokenDto>.Error(HttpStatusCode.Conflict, "کد ملی یا شماره موبایل تکراری است. به صفحه پیگیری مراجعه بفرمایید");
-            else
+            if (applicant.NationalNumber == nationalCode && applicant.PhoneNumber == mobile)
             {
-                token = GenerateJwtTokenForApplicant(regId, firstName, lastName, applicant.Id, nationalCode, mobile, appSetting);
+                token = GenerateJwtTokenForApplicant(regId, applicant.FirstName, applicant.LastName, applicant.Id,
+                    nationalCode, mobile, appSetting);
                 return ActionReport<TokenDto>.Success(token);
             }
-
+            else
+                return ActionReport<TokenDto>.Error(HttpStatusCode.Conflict, "کد ملی یا شماره موبایل وارد شده قبلا ثبت شده است.لطفا به صفحه پیگیری بروید");
 
         applicant = new Applicant
         {
