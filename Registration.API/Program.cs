@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using Autofac;
 using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Registration.API.Common;
 
@@ -103,7 +105,13 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy =>
+        policy.RequireClaim(ClaimTypes.Actor,"Admin","SuperAdmin"));
+    options.AddPolicy("SuperAdmin", policy =>
+        policy.RequireClaim(ClaimTypes.Actor, "SuperAdmin"));
+});
 
 var app = builder.Build();
 app.UseCors("AllowAll");

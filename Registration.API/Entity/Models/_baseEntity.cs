@@ -15,3 +15,5 @@ partial class Reg : BaseEntity;
 partial class RegStep : BaseEntity;
 partial class RegStepStatus : BaseEntity;
 partial class Step : BaseEntity;
+//
+partial class User : BaseEntity;

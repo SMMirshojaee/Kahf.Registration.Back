@@ -16,8 +16,13 @@ public class RegController(RegBusiness b, IMapper m, IOptions<AppSettings> ap, I
 
     [HttpGet("{regId}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetById(int regId) =>
-        Ok(Mapper.Map<RegDto>(await Business.GetById(regId)));
+    public async Task<IActionResult> GetById(int regId)
+    {
+        RegDto? reg = Mapper.Map<RegDto>(await Business.GetById(regId));
+        if (reg is null)
+            return NotFound();
+        return Ok(reg);
+    }
 
     [HttpGet]
     [AllowAnonymous]

@@ -30,6 +30,8 @@ public partial class RegContext : DbContext
 
     public virtual DbSet<Step> Steps { get; set; }
 
+    public virtual DbSet<User> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Applicant>(entity =>
@@ -121,7 +123,7 @@ public partial class RegContext : DbContext
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Title).HasMaxLength(50);
             entity.Property(e => e.Type).HasMaxLength(50);
-            entity.Property(e => e.Value).HasMaxLength(1000);
+            entity.Property(e => e.Value).HasMaxLength(4000);
 
             entity.HasOne(d => d.Field).WithMany(p => p.FieldOptions)
                 .HasForeignKey(d => d.FieldId)
@@ -202,6 +204,19 @@ public partial class RegContext : DbContext
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Title).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("Users", "admin");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.HashedPassword).HasMaxLength(50);
+            entity.Property(e => e.PasswordSalt).HasMaxLength(50);
+            entity.Property(e => e.Role).HasMaxLength(50);
+            entity.Property(e => e.Username).HasMaxLength(20);
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Data.SqlTypes;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -88,5 +89,15 @@ public static class Common
         }
 
         return result.ToString();
+    }
+    
+    public static string HashPassword(string password, string saltString)
+    {
+        byte[] salt = Encoding.UTF8.GetBytes(saltString);
+
+        using Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, salt, 1_000, HashAlgorithmName.SHA256);
+        byte[] hash = pbkdf2.GetBytes(32); // 256-bit hash
+
+        return Convert.ToBase64String(hash);
     }
 }
