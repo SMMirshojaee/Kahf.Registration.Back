@@ -25,6 +25,8 @@ public partial class RegStep
 
     public override DateTime CreatedDate { get; set; }
 
+    public virtual ICollection<ApplicantFormValue> ApplicantFormValues { get; set; } = new List<ApplicantFormValue>();
+
     public virtual ICollection<Field> Fields { get; set; } = new List<Field>();
 
     public virtual Reg Reg { get; set; } = null!;

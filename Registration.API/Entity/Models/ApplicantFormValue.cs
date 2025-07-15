@@ -26,4 +26,6 @@ public partial class ApplicantFormValue
     public virtual Field Field { get; set; } = null!;
 
     public virtual FieldOption? FieldOption { get; set; }
+
+    public virtual RegStep RegStep { get; set; } = null!;
 }

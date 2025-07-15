@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Registration.API.Business;
 using Registration.API.Common;
 
-namespace Registration.API.Controllers
+namespace Registration.API.Controllers.Admin
 {
     [Route("api/[controller]/[action]")]
     [ApiController]

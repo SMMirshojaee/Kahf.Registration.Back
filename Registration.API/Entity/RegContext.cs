@@ -88,7 +88,13 @@ public partial class RegContext : DbContext
 
             entity.HasOne(d => d.FieldOption).WithMany(p => p.ApplicantFormValues)
                 .HasForeignKey(d => d.FieldOptionId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_ApplicantFormValues_FieldOptions");
+
+            entity.HasOne(d => d.RegStep).WithMany(p => p.ApplicantFormValues)
+                .HasForeignKey(d => d.RegStepId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicantFormValues_RegSteps");
         });
 
         modelBuilder.Entity<Field>(entity =>
@@ -121,13 +127,12 @@ public partial class RegContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Title).HasMaxLength(50);
+            entity.Property(e => e.Title).HasMaxLength(100);
             entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.Value).HasMaxLength(4000);
 
             entity.HasOne(d => d.Field).WithMany(p => p.FieldOptions)
                 .HasForeignKey(d => d.FieldId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FieldOptions_Fields");
         });
 

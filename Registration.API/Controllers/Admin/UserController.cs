@@ -5,13 +5,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Registration.API.Business;
 using Registration.API.Common;
-using Registration.API.Entity.Dtos;
-using Registration.API.Entity.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Registration.API.Controllers;
+namespace Registration.API.Controllers.Admin;
 
 public class UserController(UserBusiness u, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
     AdminGenericController<UserBusiness, User>(u, m, ap, ac)
@@ -24,7 +22,7 @@ public class UserController(UserBusiness u, IMapper m, IOptions<AppSettings> ap,
         if (user is null)
             return NotFound();
 
-        var salt = CreateRandomString(32);
+        //var salt = CreateRandomString(32);
         var hashedPassword = HashPassword(password, user.PasswordSalt);
 
         if (hashedPassword != user.HashedPassword)
