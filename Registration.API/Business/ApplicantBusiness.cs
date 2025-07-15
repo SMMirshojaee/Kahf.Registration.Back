@@ -20,7 +20,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         TokenDto token;
 
         if (applicant is not null)
-            if (applicant.NationalNumber == nationalCode && applicant.PhoneNumber == mobile)
+            if (applicant.NationalNumber == nationalCode && applicant.PhoneNumber == mobile && string.IsNullOrEmpty(applicant.TrackingCode))
             {
                 token = GenerateJwtTokenForApplicant(regId, applicant.FirstName, applicant.LastName, applicant.Id,
                     nationalCode, mobile, appSetting);
