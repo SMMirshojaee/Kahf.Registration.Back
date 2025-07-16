@@ -18,6 +18,8 @@ namespace Registration.API.Common
 
             CreateMap<ApplicantFormValue, ApplicantFormValueDto>().ReverseMap();
             CreateMap<Applicant, MemberInfoDto>().ReverseMap();
+            CreateMap<Applicant, ApplicantInfoDto>().ReverseMap();
+            CreateMap<Applicant, ApplicantWithFormValueDto>().ReverseMap();
         }
     }
 }

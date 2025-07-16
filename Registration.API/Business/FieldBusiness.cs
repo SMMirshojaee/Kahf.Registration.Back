@@ -26,4 +26,11 @@ public class FieldBusiness(ApplicantBusiness applicantBusiness, RegContext conte
             .OrderBy(e => e.Order)
             .ToListAsync();
     }
+
+    public Task<List<Field>> GetAllWithOptions(int regStepId)
+    {
+        return Where(e => e.RegStepId == regStepId)
+            .Include(e => e.FieldOptions)
+            .ToListAsync();
+    }
 }

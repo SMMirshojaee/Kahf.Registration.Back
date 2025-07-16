@@ -34,6 +34,7 @@
         public byte Order { get; set; }
 
         public byte MemberLimit { get; set; }
+
         public string? AddMemberDescription { get; set; }
 
         public virtual ICollection<RegStepStatusDto> RegStepStatuses { get; set; } = new List<RegStepStatusDto>();
@@ -50,6 +51,7 @@
         public string PublicMessage { get; set; } = null!;
 
         public bool IsWaiting { get; set; }
+
         public bool IsNotChecked { get; set; }
 
         public bool IsAccepted { get; set; }

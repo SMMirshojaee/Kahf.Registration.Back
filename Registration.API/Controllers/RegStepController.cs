@@ -7,7 +7,7 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Controllers
 {
-    public class RegStepController(RegStepBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
+    public partial class RegStepController(RegStepBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
         GenericController<RegStepBusiness, RegStep>(b, m, ap, ac)
     {
 

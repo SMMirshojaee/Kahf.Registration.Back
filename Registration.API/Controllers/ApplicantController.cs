@@ -11,7 +11,7 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Controllers;
 
-public class ApplicantController(ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness RegStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
+public partial class ApplicantController(RegStepStatusBusiness regStepStatusBusiness, ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness regStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
 {
     [HttpPost("{regId}")]
     [AllowAnonymous]
@@ -53,14 +53,14 @@ public class ApplicantController(ApplicantFormValueBusiness applicantFormValueBu
     {
         Applicant? applicant = await Business.GetById(ApplicantId, true);
         if (applicant is null) return NotFound();
-        RegStep? regStep = await RegStepBusiness.GetByIdWithStatuses(regStepId);
+        RegStep? regStep = await regStepBusiness.GetByIdWithStatuses(regStepId);
         if (regStep is null) return NotFound();
         bool hasAnyAnswer = await applicantFormValueBusiness.Where(e => e.ApplicantId == ApplicantId
                                                                            && !e.Deleted).AnyAsync();
 
         if (!hasAnyAnswer)
             return StatusCode((int)HttpStatusCode.Forbidden);
-        
+
         RegStepStatus? notCheckedStatus = regStep.RegStepStatuses.FirstOrDefault(e => e.IsNotChecked);
         if (notCheckedStatus is null) return NotFound();
         applicant.StatusId = notCheckedStatus.Id;

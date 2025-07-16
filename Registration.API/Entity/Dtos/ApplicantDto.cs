@@ -1,5 +1,30 @@
 ﻿namespace Registration.API.Entity.Dtos
 {
+    public class ApplicantInfoDto
+    {
+        public int Id { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public int RegId { get; set; }
+
+        public int? StatusId { get; set; }
+
+        public string NationalNumber { get; set; } = null!;
+
+        public string PhoneNumber { get; set; } = null!;
+
+        public string FirstName { get; set; } = null!;
+
+        public string LastName { get; set; } = null!;
+
+        public int? LeaderId { get; set; }
+
+        public string? TrackingCode { get; set; }
+
+        public virtual List<ApplicantInfoDto> InverseLeader { get; set; } = new List<ApplicantInfoDto>();
+
+    }
     public class ApplicantDto
     {
         public DateTime CreatedDate { get; set; }

@@ -18,6 +18,10 @@
 
         public bool Mandatory { get; set; }
 
+        public bool ForLeader { get; set; }
+
+        public bool ForMember { get; set; }
+
         public bool Hidden { get; set; }
 
         public virtual ICollection<FieldOptionDto> FieldOptions { get; set; } = new List<FieldOptionDto>();

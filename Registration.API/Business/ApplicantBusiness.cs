@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
+using Registration.API.Entity.Models;
 
 namespace Registration.API.Business;
 
@@ -154,5 +155,26 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             return ActionReport.Error(HttpStatusCode.NotFound);
         ActionReport report = await Delete(memberId);
         return report;
+    }
+
+    public Task<List<Applicant>> GetByRegId(int regId)
+    {
+        return Where(e => e.RegId == regId)
+            .Include(e => e.InverseLeader)
+        .ToListAsync();
+    }
+
+    public async Task<List<Applicant>> GetWithFormValuesWithRegStepId(int regStepId)
+    {
+        RegStep? regStep = await regStepBusiness.Where(e => e.Id == regStepId)
+            .Include(e => e.RegStepStatuses)
+            .FirstOrDefaultAsync();
+        if (regStep is null)
+            return new List<Applicant>();
+        return await Where(e => (regStep.Order == 1 && !e.StatusId.HasValue && e.RegId == regStep.RegId) || e.Status.RegStepId == regStepId)
+            .Include(e => e.ApplicantFormValues)
+            .Include(e => e.InverseLeader)
+            .Include(e => e.Status)
+            .ToListAsync();
     }
 }

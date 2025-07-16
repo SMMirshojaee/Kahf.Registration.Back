@@ -8,6 +8,7 @@ public class RegStepBusiness(RegContext context, IMapper mapper) : GenericBusine
     public Task<List<RegStep>> GetByRegId(int regId)
         => Where(e => e.RegId == regId)
             .Include(e => e.RegStepStatuses)
+            .Include(e => e.Step)
             .OrderBy(e => e.Order).ToListAsync();
 
     public Task<RegStep?> GetByIdWithStatuses(int id)
@@ -15,4 +16,9 @@ public class RegStepBusiness(RegContext context, IMapper mapper) : GenericBusine
         Where(e => e.Id == id)
             .Include(e => e.RegStepStatuses)
             .FirstOrDefaultAsync();
+
+    public async Task<object> GetSameStepStatuses(int statusId)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -7,7 +7,7 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Controllers;
 
-public class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac,
+public partial class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac,
     RegStepBusiness regStepBusiness, ApplicantBusiness applicantBusiness)
     : GenericController<ApplicantFormValueBusiness, ApplicantFormValue>(b, m, ap, ac)
 {
