@@ -31,6 +31,7 @@ public class FieldBusiness(ApplicantBusiness applicantBusiness, RegContext conte
     {
         return Where(e => e.RegStepId == regStepId)
             .Include(e => e.FieldOptions)
+            .OrderBy(e => e.Order)
             .ToListAsync();
     }
 }
