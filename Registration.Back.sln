@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{FF659EF1-B
 		scaffold.txt = scaffold.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payment", "Payment\Payment.csproj", "{B6D95B52-EDB5-4087-A596-2D54D81A30B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{A66DCBE1-C16F-4C0F-8C68-6450869E64C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A66DCBE1-C16F-4C0F-8C68-6450869E64C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A66DCBE1-C16F-4C0F-8C68-6450869E64C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6D95B52-EDB5-4087-A596-2D54D81A30B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6D95B52-EDB5-4087-A596-2D54D81A30B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6D95B52-EDB5-4087-A596-2D54D81A30B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6D95B52-EDB5-4087-A596-2D54D81A30B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

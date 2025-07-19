@@ -29,6 +29,8 @@ public partial class RegStep
 
     public virtual ICollection<Field> Fields { get; set; } = new List<Field>();
 
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
     public virtual Reg Reg { get; set; } = null!;
 
     public virtual ICollection<RegStepStatus> RegStepStatuses { get; set; } = new List<RegStepStatus>();

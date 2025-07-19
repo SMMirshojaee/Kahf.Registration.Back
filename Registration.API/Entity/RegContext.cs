@@ -22,6 +22,10 @@ public partial class RegContext : DbContext
 
     public virtual DbSet<FieldType> FieldTypes { get; set; }
 
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<Models.Payment> Payments { get; set; }
+
     public virtual DbSet<Reg> Regs { get; set; }
 
     public virtual DbSet<RegStep> RegSteps { get; set; }
@@ -43,6 +47,7 @@ public partial class RegContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(4000);
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(100);
             entity.Property(e => e.NationalNumber)
@@ -145,6 +150,38 @@ public partial class RegContext : DbContext
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.ToTable("Orders", "applicant");
+
+            entity.Property(e => e.Authority).HasMaxLength(100);
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.NationalNumber)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.RequestContent).HasMaxLength(4000);
+            entity.Property(e => e.RequestDate).HasPrecision(0);
+            entity.Property(e => e.VerifyContent).HasMaxLength(4000);
+            entity.Property(e => e.VerifyDate).HasPrecision(0);
+        });
+
+        modelBuilder.Entity<Models.Payment>(entity =>
+        {
+            entity.ToTable("Payment", "pay");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(1000);
+
+            entity.HasOne(d => d.RegStep).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.RegStepId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Payment_RegSteps");
         });
 
         modelBuilder.Entity<Reg>(entity =>

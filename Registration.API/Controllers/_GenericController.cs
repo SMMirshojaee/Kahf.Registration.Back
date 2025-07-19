@@ -65,9 +65,9 @@ namespace Registration.API.Controllers
             }
         }
 
-        protected IActionResult InternalServerError()
+        protected IActionResult InternalServerError(string? message = null)
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode((int)HttpStatusCode.InternalServerError, message);
         }
         protected IActionResult Status<T>(ActionReport<T> report)
         {

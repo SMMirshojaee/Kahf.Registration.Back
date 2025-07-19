@@ -116,6 +116,10 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             .OrderByDescending(e => e.Id)
             .ToListAsync();
 
+    public Task<int> GetMembersCount(int applicantId)
+        => Where(ent => ent.LeaderId == applicantId)
+            .CountAsync();
+
     public async Task<ActionReport<MemberInfoDto>> AddMember(int applicantId, int regStepId, string firstName, string lastName, string nationalCode, string mobile)
     {
         RegStep? regStep = await regStepBusiness.GetById(regStepId);
