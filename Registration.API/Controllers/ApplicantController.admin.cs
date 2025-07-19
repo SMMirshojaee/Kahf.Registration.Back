@@ -44,5 +44,10 @@ namespace Registration.API.Controllers
             var report = await Business.SaveChanges();
             return Status(report);
         }
+
+        [HttpGet("{applicantId}")]
+        [Authorize("Admin")]
+        public async Task<IActionResult> SaveDescription(int applicantId, [FromQuery] string? description)
+        => Status(await Business.UpdateDescription(applicantId, description));
     }
 }

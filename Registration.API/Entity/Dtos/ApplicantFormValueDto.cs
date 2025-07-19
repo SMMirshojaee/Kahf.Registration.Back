@@ -36,6 +36,8 @@ public class ApplicantWithFormValueDto
 
     public string LastName { get; set; } = null!;
 
+    public string? Description { get; set; }
+
     public int? LeaderId { get; set; }
 
     public string? TrackingCode { get; set; }

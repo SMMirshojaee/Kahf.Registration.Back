@@ -181,4 +181,13 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             .Include(e => e.Status)
             .ToListAsync();
     }
+
+    public async Task<ActionReport> UpdateDescription(int applicantId, string? description)
+    {
+        Applicant? applicant = await GetById(applicantId, true);
+        if (applicant is null)
+            return ActionReport.Error(HttpStatusCode.NotFound);
+        applicant.Description = description;
+        return await SaveChanges();
+    }
 }
