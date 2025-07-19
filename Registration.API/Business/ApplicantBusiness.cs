@@ -49,6 +49,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
     public async Task<ActionReport<TokenDto>> SingIn(int regId, string nationalCode, string mobile, string trackingCode, AppSettings appSetting)
     {
         Applicant? applicant = await FirstOrDefaultAsync(e =>
+            !e.LeaderId.HasValue &&
             e.RegId == regId &&
             e.NationalNumber == nationalCode &&
             e.PhoneNumber == mobile &&
