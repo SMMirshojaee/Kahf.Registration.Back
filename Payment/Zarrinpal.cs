@@ -36,7 +36,7 @@ namespace Payment
             }), ContentType.Json);
             RestResponse<ResponseData> response = await client.ExecuteAsync<ResponseData>(request);
 
-            if (response is { IsSuccessful: true, Data.Data.Code: 100 })
+            if (response is { IsSuccessful: true, Data.Data.Code: 100 or 101 })
             {
                 return new ZarrinpalResponse
                 {
@@ -66,7 +66,7 @@ namespace Payment
             {
                 merchant_id = _merchantId,
                 amount = amount,
-                callback_url = isDevelopment? _localCallbackUrl: _callbackUrl,
+                callback_url = isDevelopment ? _localCallbackUrl : _callbackUrl,
                 description = "Transaction description.",
                 metadata = new { mobile = mobile },
                 currency = "IRR",
@@ -75,7 +75,7 @@ namespace Payment
 
             RestResponse<ResponseData> response = await client.ExecuteAsync<ResponseData>(request);
 
-            if (response is { IsSuccessful: true, Data.Data.Code: 100 })
+            if (response is { IsSuccessful: true, Data.Data.Code: 100 or 101 })
             {
                 return new ZarrinpalResponse
                 {

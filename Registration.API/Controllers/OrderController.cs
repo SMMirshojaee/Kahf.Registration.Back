@@ -10,10 +10,10 @@ using Registration.API.Common;
 namespace Registration.API.Controllers
 {
     using Payment = Entity.Models.Payment;
-    public class OrderController(IHostEnvironment env, ApplicantBusiness applicantBusiness, PaymentBusiness paymentBusiness, OrderBusiness business, IMapper mapper, IOptions<AppSettings> appSetting, IHttpContextAccessor contextAccessor) :
+    public class OrderController(RegStepBusiness regStepBusiness, IHostEnvironment environment, ApplicantBusiness applicantBusiness, PaymentBusiness paymentBusiness, OrderBusiness business, IMapper mapper, IOptions<AppSettings> appSetting, IHttpContextAccessor contextAccessor) :
         GenericController<OrderBusiness, Order>(business, mapper, appSetting, contextAccessor)
     {
-
+        private IHostEnvironment env = environment;
         [HttpGet("{regStepId}")]
         public async Task<IActionResult> SendRequest(int regStepId)
         {
@@ -48,11 +48,22 @@ namespace Registration.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Callback([FromQuery] string authority, [FromQuery] string status)
         {
-            if (status.ToLower() != "ok")
-                return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=1");
             Order? order = await Business.GetByAuthority(authority);
             if (order is null)
                 return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=2");
+
+            RegStep regStep = (await regStepBusiness.GetByIdWithStatuses(order.RegStepId))!;
+
+            var rejectStatus = regStep.RegStepStatuses.First(e => e.IsRejected);
+
+            Applicant applicant = (await applicantBusiness.GetById(order.ApplicantId, true))!;
+
+            if (status.ToLower() != "ok")
+            {
+                applicant.StatusId = rejectStatus.Id;
+                await Business.SaveChanges();
+                return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=1");
+            }
 
             Zarrinpal zarrinpal = new(env.IsDevelopment());
             ZarrinpalResponse verifyResponse = await zarrinpal.Verify(authority, order.Amount);
@@ -61,6 +72,8 @@ namespace Registration.API.Controllers
                 order.VerifyContent = verifyResponse.Content;
                 order.VerifyStatus = verifyResponse.Code;
                 order.VerifyDate = DateTime.Now;
+
+                applicant.StatusId = rejectStatus.Id;
                 await Business.SaveChanges();
                 return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=3");
             }
@@ -68,8 +81,9 @@ namespace Registration.API.Controllers
             order.VerifyStatus = verifyResponse.Code;
             order.RefId = verifyResponse.RefId;
             order.VerifyDate = DateTime.Now;
+            applicant.StatusId = regStep.RegStepStatuses.First(e => e.IsAccepted).Id;
             await Business.SaveChanges();
-            return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=0&refId=${verifyResponse.RefId}");
+            return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=0&refId={verifyResponse.RefId}");
         }
     }
 }
