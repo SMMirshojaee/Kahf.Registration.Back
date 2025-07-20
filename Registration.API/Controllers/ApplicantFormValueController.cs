@@ -4,10 +4,11 @@ using Microsoft.Extensions.Options;
 using Registration.API.Business;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
+using SMS;
 
 namespace Registration.API.Controllers;
 
-public partial class ApplicantFormValueController(ApplicantFormValueBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac,
+public class ApplicantFormValueController(Magfa smsSender, ApplicantFormValueBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac,
     RegStepBusiness regStepBusiness, ApplicantBusiness applicantBusiness)
     : GenericController<ApplicantFormValueBusiness, ApplicantFormValue>(b, m, ap, ac)
 {
@@ -56,7 +57,10 @@ public partial class ApplicantFormValueController(ApplicantFormValueBusiness b, 
             applicant.StatusId = startStatus?.Id;
             report = await applicantBusiness.SaveChanges();
             if (report.Successful)
+            {
+                await smsSender.Send($"کد رهگیری شما: {applicant.TrackingCode}", applicant.PhoneNumber);
                 return Ok(applicant.TrackingCode);
+            }
         }
         return Status(report);
     }

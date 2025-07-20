@@ -20,5 +20,13 @@ namespace Registration.API.Controllers
         {
             return Ok(Mapper.Map<RegStepDto>(await Business.GetByIdWithStatuses(regStepId)));
         }
+
+        [HttpGet("{currentRegStepId}")]
+        [Authorize("Admin")]
+        public async Task<IActionResult> GetNextStep(int currentRegStepId)
+        {
+            return Ok(Mapper.Map<RegStepDto>(await Business.GetNextStep(currentRegStepId)));
+        }
+
     }
 }

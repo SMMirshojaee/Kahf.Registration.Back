@@ -191,4 +191,23 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         applicant.Description = description;
         return await SaveChanges();
     }
+
+    public async Task<ActionReport<List<Applicant>>> TransferAccepted(int regStepId, int nextStatusId)
+    {
+        RegStep? regStep = await regStepBusiness.GetByIdWithStatuses(regStepId);
+        if (regStep is null)
+            return ActionReport<List<Applicant>>.Error(HttpStatusCode.NotFound);
+        int acceptedStatusId = regStep.RegStepStatuses.First(e => e.IsAccepted).Id;
+        List<Applicant> acceptedApplicants = await Where(e => e.StatusId == acceptedStatusId, true).ToListAsync();
+        if (!acceptedApplicants.Any())
+            return ActionReport<List<Applicant>>.Success(new ());
+        foreach (Applicant applicant in acceptedApplicants)
+        {
+            applicant.StatusId = nextStatusId;
+        }
+        var report = await SaveChanges();
+        if (report.Successful)
+            return ActionReport<List<Applicant>>.Success(acceptedApplicants);
+        return ActionReport<List<Applicant>>.Error(report);
+    }
 }

@@ -8,12 +8,15 @@ using Registration.API.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using SMS;
 
 namespace Registration.API.Controllers.Admin;
 
-public class UserController(UserBusiness u, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
+public class UserController(Magfa smsSender, UserBusiness u, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
     AdminGenericController<UserBusiness, User>(u, m, ap, ac)
 {
+    private Magfa _smsSender => smsSender;
+
     [HttpGet("{username}/{password}")]
     [AllowAnonymous]
     public async Task<IActionResult> Login(string username, string password)
@@ -30,6 +33,17 @@ public class UserController(UserBusiness u, IMapper m, IOptions<AppSettings> ap,
 
         return Ok(GenerateAdminToken(user, AppSetting));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> SendSms()
+    {
+        //SmsIr sms = new();
+        //await sms.SendBuck("سلام عزیزم", ["09128486146", "09198114632"]);
+
+        var message = await _smsSender.Send("تست پیامک سامانه کهف", "09128486146", "989919228231");
+        return Ok(message);
+    }
+
 
     private string GenerateAdminToken(User user, AppSettings appSetting)
     {

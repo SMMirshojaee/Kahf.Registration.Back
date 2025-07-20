@@ -8,10 +8,11 @@ using Microsoft.Extensions.Options;
 using Registration.API.Business;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
+using SMS;
 
 namespace Registration.API.Controllers;
 
-public partial class ApplicantController(RegStepStatusBusiness regStepStatusBusiness, ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness regStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
+public partial class ApplicantController(Magfa smsSender, RegStepStatusBusiness regStepStatusBusiness, ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness regStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
 {
     [HttpPost("{regId}")]
     [AllowAnonymous]

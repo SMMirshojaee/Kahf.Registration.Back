@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Payment\Payment.csproj" />
+    <ProjectReference Include="..\SMS\SMS.csproj" />
   </ItemGroup>
 
 </Project>

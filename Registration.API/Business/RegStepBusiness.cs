@@ -17,8 +17,20 @@ public class RegStepBusiness(RegContext context, IMapper mapper) : GenericBusine
             .Include(e => e.RegStepStatuses)
             .FirstOrDefaultAsync();
 
-    public async Task<object> GetSameStepStatuses(int statusId)
+    public async Task<RegStep?> GetNextStep(int currentRegStepId)
     {
-        throw new NotImplementedException();
+        int regId = (await GetById(currentRegStepId))!.RegId;
+        List<RegStep> regSteps = await GetByRegId(regId);
+        if (regSteps is { Count: > 0 })
+        {
+            int index = regSteps.FindIndex(e => e.Id == currentRegStepId);
+            if (index == -1)
+                return null;
+            if (index == regSteps.Count - 1)
+                return null;
+            return regSteps[index + 1];
+        }
+
+        return null;
     }
 }
