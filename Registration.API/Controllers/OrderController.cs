@@ -32,8 +32,10 @@ namespace Registration.API.Controllers
             if (!report.Successful)
                 return InternalServerError("خطا در ثبت سفارش");
 
+            var applicant = await applicantBusiness.GetById(ApplicantId);
+
             Zarrinpal zarrinpal = new(env.IsDevelopment());
-            ZarrinpalResponse requestReport = await zarrinpal.SendRequest(amount: newOrder.Amount, newOrder.Id, Mobile);
+            ZarrinpalResponse requestReport = await zarrinpal.SendRequest(id: ApplicantId, firstName: applicant.FirstName, lastName: applicant.LastName, amount: newOrder.Amount, orderId: newOrder.Id, mobile: Mobile);
             if (!requestReport.Successful)
             {
                 await Business.UpdateRequest(newOrder.Id, requestReport.Authority, requestReport.Content, requestReport.Code);
