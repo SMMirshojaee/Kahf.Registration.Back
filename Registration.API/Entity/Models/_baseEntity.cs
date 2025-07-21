@@ -11,6 +11,7 @@ partial class Applicant : BaseEntity;
 partial class FieldOption : BaseEntity;
 partial class Field : BaseEntity;
 partial class FieldType : BaseEntity;
+partial class Message : BaseEntity;
 partial class Order : BaseEntity;
 partial class Payment : BaseEntity;
 partial class Reg : BaseEntity;

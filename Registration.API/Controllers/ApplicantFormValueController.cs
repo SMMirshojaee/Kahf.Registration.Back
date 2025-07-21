@@ -8,7 +8,7 @@ using SMS;
 
 namespace Registration.API.Controllers;
 
-public class ApplicantFormValueController(Magfa smsSender, ApplicantFormValueBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac,
+public class ApplicantFormValueController(SmsHelper smsSender, ApplicantFormValueBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac,
     RegStepBusiness regStepBusiness, ApplicantBusiness applicantBusiness)
     : GenericController<ApplicantFormValueBusiness, ApplicantFormValue>(b, m, ap, ac)
 {
@@ -58,7 +58,7 @@ public class ApplicantFormValueController(Magfa smsSender, ApplicantFormValueBus
             report = await applicantBusiness.SaveChanges();
             if (report.Successful)
             {
-                await smsSender.Send($"کد رهگیری شما: {applicant.TrackingCode}", applicant.PhoneNumber);
+                await smsSender.Send(applicant.Id, applicant.NationalNumber, applicant.PhoneNumber, $"کد رهگیری شما: {applicant.TrackingCode}", null);
                 return Ok(applicant.TrackingCode);
             }
         }

@@ -46,7 +46,7 @@ namespace Registration.API.Controllers
             ActionReport report = await Business.SaveChanges();
             if (report.Successful && sendSms && !string.IsNullOrEmpty(smsText))
             {
-                Response? sendSmsReport = await smsSender.Send(smsText, applicant.PhoneNumber);
+                ActionReport sendSmsReport = await smsSender.Send(applicant.Id, applicant.NationalNumber, applicant.PhoneNumber, smsText, UserId);
                 //TODO
             }
             return Status(report);
@@ -65,13 +65,10 @@ namespace Registration.API.Controllers
             if (!report.Successful)
                 return Status(report);
             if (report.Output is null || !report.Output.Any())
-            {
                 return BadRequest("هیچ زائر تایید شده ای وجود ندارد");
-            }
             if (sendSms && !string.IsNullOrEmpty(smsText))
-            {
-                await smsSender.Send(smsText, report.Output.Select(e => e.PhoneNumber).ToArray());
-            }
+                foreach (Applicant applicant in report.Output)
+                    await smsSender.Send(applicant.Id, applicant.NationalNumber, applicant.PhoneNumber, smsText, UserId);
 
             return Ok();
         }

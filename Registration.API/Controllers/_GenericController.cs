@@ -28,6 +28,8 @@ namespace Registration.API.Controllers
         protected readonly string NationalCode;
         protected readonly string Mobile;
 
+        protected readonly int UserId;
+
         public GenericController(TBusiness business, IMapper mapper, IOptions<AppSettings> appSetting, IHttpContextAccessor contextAccessor)
         {
             Business = business;
@@ -50,9 +52,10 @@ namespace Registration.API.Controllers
                         Mobile = user.FindFirst(ClaimTypes.MobilePhone)?.Value!;
                         return;
                     case "Admin":
+                        UserId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
                         return;
                     case "SuperAdmin":
-
+                        UserId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
                         return;
                     default:
                         return;

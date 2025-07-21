@@ -4,7 +4,7 @@ using RestSharp;
 
 namespace Payment
 {
-    public class Zarrinpal(bool isDevelopment)
+    public class Zarrinpal
     {
         private readonly string _requestApi = "https://payment.zarinpal.com/pg/v4/payment/request.json";
         private readonly string _verifyApi = "https://payment.zarinpal.com/pg/v4/payment/verify.json";
@@ -66,7 +66,7 @@ namespace Payment
             {
                 merchant_id = _merchantId,
                 amount = amount,
-                callback_url = isDevelopment ? _localCallbackUrl : _callbackUrl,
+                callback_url = _callbackUrl,
                 description = $"{id}/{firstName}-{lastName}/{amount}",
                 metadata = new { mobile = mobile },
                 currency = "IRR",

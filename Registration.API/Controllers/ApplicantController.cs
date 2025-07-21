@@ -12,7 +12,8 @@ using SMS;
 
 namespace Registration.API.Controllers;
 
-public partial class ApplicantController(Magfa smsSender, RegStepStatusBusiness regStepStatusBusiness, ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness regStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) : GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
+public partial class ApplicantController(SmsHelper smsSender, RegStepStatusBusiness regStepStatusBusiness, ApplicantFormValueBusiness applicantFormValueBusiness, RegStepBusiness regStepBusiness, ApplicantBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
+    GenericController<ApplicantBusiness, Applicant>(b, m, ap, ac)
 {
     [HttpPost("{regId}")]
     [AllowAnonymous]

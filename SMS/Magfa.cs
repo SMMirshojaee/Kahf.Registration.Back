@@ -27,7 +27,7 @@ namespace SMS
                 };
 
                 RestClient client = new RestClient(options);
-                RestRequest request = new RestRequest()
+                RestRequest request = new ()
                 {
                     Method = Method.Post
                 };

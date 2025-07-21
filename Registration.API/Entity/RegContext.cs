@@ -22,6 +22,8 @@ public partial class RegContext : DbContext
 
     public virtual DbSet<FieldType> FieldTypes { get; set; }
 
+    public virtual DbSet<Message> Messages { get; set; }
+
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<Models.Payment> Payments { get; set; }
@@ -150,6 +152,30 @@ public partial class RegContext : DbContext
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.ToTable("Messages", "applicant");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Mobile).HasMaxLength(20);
+            entity.Property(e => e.NationalNumber)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.Text).HasMaxLength(4000);
+
+            entity.HasOne(d => d.Applicant).WithMany(p => p.Messages)
+                .HasForeignKey(d => d.ApplicantId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Messages_Applicants");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Messages)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Messages_Users");
         });
 
         modelBuilder.Entity<Order>(entity =>

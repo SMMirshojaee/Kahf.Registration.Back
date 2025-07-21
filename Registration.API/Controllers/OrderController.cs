@@ -10,7 +10,7 @@ using Registration.API.Common;
 namespace Registration.API.Controllers
 {
     using Payment = Entity.Models.Payment;
-    public class OrderController(RegStepBusiness regStepBusiness, IHostEnvironment environment, ApplicantBusiness applicantBusiness, PaymentBusiness paymentBusiness, OrderBusiness business, IMapper mapper, IOptions<AppSettings> appSetting, IHttpContextAccessor contextAccessor) :
+    public class OrderController(Zarrinpal paymentService, RegStepBusiness regStepBusiness, IHostEnvironment environment, ApplicantBusiness applicantBusiness, PaymentBusiness paymentBusiness, OrderBusiness business, IMapper mapper, IOptions<AppSettings> appSetting, IHttpContextAccessor contextAccessor) :
         GenericController<OrderBusiness, Order>(business, mapper, appSetting, contextAccessor)
     {
         private IHostEnvironment env = environment;
@@ -34,8 +34,7 @@ namespace Registration.API.Controllers
 
             var applicant = await applicantBusiness.GetById(ApplicantId);
 
-            Zarrinpal zarrinpal = new(env.IsDevelopment());
-            ZarrinpalResponse requestReport = await zarrinpal.SendRequest(id: ApplicantId, firstName: applicant.FirstName, lastName: applicant.LastName, amount: newOrder.Amount, orderId: newOrder.Id, mobile: Mobile);
+            ZarrinpalResponse requestReport = await paymentService.SendRequest(id: ApplicantId, firstName: applicant.FirstName, lastName: applicant.LastName, amount: newOrder.Amount, orderId: newOrder.Id, mobile: Mobile);
             if (!requestReport.Successful)
             {
                 await Business.UpdateRequest(newOrder.Id, requestReport.Authority, requestReport.Content, requestReport.Code);
@@ -67,8 +66,7 @@ namespace Registration.API.Controllers
                 return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=1");
             }
 
-            Zarrinpal zarrinpal = new(env.IsDevelopment());
-            ZarrinpalResponse verifyResponse = await zarrinpal.Verify(authority, order.Amount);
+            ZarrinpalResponse verifyResponse = await paymentService.Verify(authority, order.Amount);
             if (!verifyResponse.Successful)
             {
                 order.VerifyContent = verifyResponse.Content;

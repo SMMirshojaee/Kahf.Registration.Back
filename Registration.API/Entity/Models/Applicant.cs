@@ -33,6 +33,8 @@ public partial class Applicant
 
     public virtual Applicant? Leader { get; set; }
 
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
     public virtual Reg Reg { get; set; } = null!;
 
     public virtual RegStepStatus? Status { get; set; }
