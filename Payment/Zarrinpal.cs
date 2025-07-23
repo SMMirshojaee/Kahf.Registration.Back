@@ -67,7 +67,7 @@ namespace Payment
                 merchant_id = _merchantId,
                 amount = amount,
                 callback_url = _callbackUrl,
-                description = $"{id}/{firstName}-{lastName}/{amount}",
+                description = $"{id}/{firstName}-{lastName}/{amount:N0}",
                 metadata = new { mobile = mobile },
                 currency = "IRR",
                 order_id = orderId

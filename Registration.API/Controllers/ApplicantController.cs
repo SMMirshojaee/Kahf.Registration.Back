@@ -17,8 +17,9 @@ public partial class ApplicantController(SmsHelper smsSender, RegStepStatusBusin
 {
     [HttpPost("{regId}")]
     [AllowAnonymous]
-    public async Task<IActionResult> Signup(int regId, SignupDto signupForm)
-        => Status(await Business.Signup(regId, signupForm.FirstName, signupForm.LastName, signupForm.NationalCode, signupForm.Mobile, AppSetting));
+    public async Task<IActionResult> Signup(int regId, SignupDto signupForm) =>
+        Status(await Business.Signup(regId, signupForm.FirstName, signupForm.LastName, signupForm.NationalCode,
+            signupForm.Mobile, AppSetting));
 
     [HttpPut("{regId}")]
     [AllowAnonymous]
