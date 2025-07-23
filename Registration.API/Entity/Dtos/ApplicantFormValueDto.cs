@@ -1,4 +1,6 @@
-﻿namespace Registration.API.Entity.Dtos;
+﻿using Registration.API.Entity.Models;
+
+namespace Registration.API.Entity.Dtos;
 
 public class ApplicantFormValueDto
 {
@@ -42,9 +44,10 @@ public class ApplicantWithFormValueDto
 
     public string? TrackingCode { get; set; }
 
-    public virtual List<ApplicantInfoDto> InverseLeader { get; set; } = new List<ApplicantInfoDto>();
+    public virtual List<ApplicantWithFormValueDto> InverseLeader { get; set; } = new ();
 
     public virtual List<ApplicantFormValueDto> ApplicantFormValues { get; set; } = new();
+    public virtual List<MessageDto> Messages { get; set; } = new();
 
     public RegStepStatusDto? Status { get; set; }
 }

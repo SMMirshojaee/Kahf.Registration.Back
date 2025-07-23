@@ -169,17 +169,18 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         .ToListAsync();
     }
 
-    public async Task<List<Applicant>> GetWithFormValuesWithRegStepId(int regStepId)
+    public async Task<List<Applicant>> GetLeadersWithFormValuesAndMembersWithRegStepId(int regStepId)
     {
         RegStep? regStep = await regStepBusiness.Where(e => e.Id == regStepId)
             .Include(e => e.RegStepStatuses)
             .FirstOrDefaultAsync();
         if (regStep is null)
             return new List<Applicant>();
-        return await Where(e => (regStep.Order == 1 && !e.StatusId.HasValue && e.RegId == regStep.RegId) || e.Status.RegStepId == regStepId)
+        return await Where(e => !e.LeaderId.HasValue && ((regStep.Order == 1 && !e.StatusId.HasValue && e.RegId == regStep.RegId) || e.Status.RegStepId == regStepId))
             .Include(e => e.ApplicantFormValues)
-            .Include(e => e.InverseLeader)
+            .Include(e => e.InverseLeader).ThenInclude(e=>e.ApplicantFormValues)
             .Include(e => e.Status)
+            .Include(e => e.Messages)
             .ToListAsync();
     }
 
@@ -200,7 +201,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         int acceptedStatusId = regStep.RegStepStatuses.First(e => e.IsAccepted).Id;
         List<Applicant> acceptedApplicants = await Where(e => e.StatusId == acceptedStatusId, true).ToListAsync();
         if (!acceptedApplicants.Any())
-            return ActionReport<List<Applicant>>.Success(new ());
+            return ActionReport<List<Applicant>>.Success(new());
         foreach (Applicant applicant in acceptedApplicants)
         {
             applicant.StatusId = nextStatusId;

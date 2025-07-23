@@ -20,6 +20,7 @@ namespace Registration.API.Common
             CreateMap<Applicant, MemberInfoDto>().ReverseMap();
             CreateMap<Applicant, ApplicantInfoDto>().ReverseMap();
             CreateMap<Applicant, ApplicantWithFormValueDto>().ReverseMap();
+            CreateMap<Message, MessageDto>().ReverseMap();
         }
     }
 }

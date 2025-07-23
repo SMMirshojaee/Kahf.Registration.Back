@@ -13,16 +13,13 @@ namespace Registration.API.Controllers
 
         [HttpGet("{regId}")]
         [Authorize("Admin")]
-        public async Task<IActionResult> GetByRegId(int regId)
-        {
-            return Ok(Mapper.Map<List<ApplicantInfoDto>>(await Business.GetByRegId(regId)));
-        }
+        public async Task<IActionResult> GetByRegId(int regId) => 
+            Ok(Mapper.Map<List<ApplicantInfoDto>>(await Business.GetByRegId(regId)));
+
         [HttpGet("{regStepId}")]
         [Authorize("Admin")]
-        public async Task<IActionResult> GetWithFormValuesWithRegStepId(int regStepId)
-        {
-            return Ok(Mapper.Map<List<ApplicantWithFormValueDto>>(await Business.GetWithFormValuesWithRegStepId(regStepId)));
-        }
+        public async Task<IActionResult> GetLeadersWithFormValuesAndMembersWithRegStepId(int regStepId) => 
+            Ok(Mapper.Map<List<ApplicantWithFormValueDto>>(await Business.GetLeadersWithFormValuesAndMembersWithRegStepId(regStepId)));
 
         [HttpPut("{applicantId}/{statusId}/{sendSms}")]
         [Authorize("Admin")]
