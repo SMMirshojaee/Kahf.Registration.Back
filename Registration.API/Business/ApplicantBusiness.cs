@@ -178,7 +178,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             return new List<Applicant>();
         return await Where(e => !e.LeaderId.HasValue && ((regStep.Order == 1 && !e.StatusId.HasValue && e.RegId == regStep.RegId) || e.Status.RegStepId == regStepId))
             .Include(e => e.ApplicantFormValues)
-            .Include(e => e.InverseLeader).ThenInclude(e=>e.ApplicantFormValues)
+            .Include(e => e.InverseLeader).ThenInclude(e => e.ApplicantFormValues)
             .Include(e => e.Status)
             .Include(e => e.Messages)
             .ToListAsync();
@@ -211,4 +211,12 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             return ActionReport<List<Applicant>>.Success(acceptedApplicants);
         return ActionReport<List<Applicant>>.Error(report);
     }
+
+    public Task<List<Applicant>> GetLeadersFullDataByRegId(int regId)
+        => Where(e => !e.LeaderId.HasValue && e.RegId == regId)
+            .Include(e => e.ApplicantFormValues)
+            .Include(e => e.InverseLeader).ThenInclude(e => e.ApplicantFormValues)
+            .Include(e => e.Status)
+            .Include(e => e.Messages)
+            .ToListAsync();
 }

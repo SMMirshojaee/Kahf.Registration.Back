@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Registration.API.Business;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
+using Registration.API.Entity.Models;
 using SMS;
 
 namespace Registration.API.Controllers
@@ -13,13 +14,19 @@ namespace Registration.API.Controllers
 
         [HttpGet("{regId}")]
         [Authorize("Admin")]
-        public async Task<IActionResult> GetByRegId(int regId) => 
+        public async Task<IActionResult> GetByRegId(int regId) =>
             Ok(Mapper.Map<List<ApplicantInfoDto>>(await Business.GetByRegId(regId)));
 
         [HttpGet("{regStepId}")]
         [Authorize("Admin")]
-        public async Task<IActionResult> GetLeadersWithFormValuesAndMembersWithRegStepId(int regStepId) => 
+        public async Task<IActionResult> GetLeadersWithFormValuesAndMembersWithRegStepId(int regStepId) =>
             Ok(Mapper.Map<List<ApplicantWithFormValueDto>>(await Business.GetLeadersWithFormValuesAndMembersWithRegStepId(regStepId)));
+
+        [HttpGet("{regId}")]
+        [Authorize("Admin")]
+        public async Task<IActionResult> GetLeadersFullDataByRegId(int regId) =>
+            Ok(Mapper.Map<List<ApplicantWithFormValueDto>>(await Business.GetLeadersFullDataByRegId(regId)));
+
 
         [HttpPut("{applicantId}/{statusId}/{sendSms}")]
         [Authorize("Admin")]
