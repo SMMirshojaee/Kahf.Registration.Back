@@ -22,4 +22,10 @@ public class PaymentController(PaymentBusiness paymentBusiness, ApplicantBusines
 
         return Ok((membersCount + 1) * payment.PerPersonAmount);
     }
+    
+    [HttpGet("{regStepId}")]
+    public async Task<IActionResult> GetByRegStepId(int regStepId)
+    {
+        return Ok( await paymentBusiness.GetByRegStepId(regStepId));
+    }
 }

@@ -84,5 +84,10 @@ namespace Registration.API.Controllers
                 return Ok();
             return StatusCode((int)report.Code, report.Message);
         }
+
+        protected IActionResult Ok<T>(object value)
+        {
+            return Ok(Mapper.Map<T>(value));
+        }
     }
 }

@@ -21,6 +21,9 @@ namespace Registration.API.Common
             CreateMap<Applicant, ApplicantInfoDto>().ReverseMap();
             CreateMap<Applicant, ApplicantWithFormValueDto>().ReverseMap();
             CreateMap<Message, MessageDto>().ReverseMap();
+
+            CreateMap<Entity.Models.Payment, PaymentDto>().ReverseMap();
+            CreateMap<Order, OrderDto>().ReverseMap();
         }
     }
 }

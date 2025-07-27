@@ -15,5 +15,11 @@ public partial class Payment
 
     public string? Description { get; set; }
 
+    public byte? InstallmentsCount { get; set; }
+
+    public int? LoanStatusId { get; set; }
+
+    public virtual RegStepStatus? LoanStatus { get; set; }
+
     public virtual RegStep RegStep { get; set; } = null!;
 }

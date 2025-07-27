@@ -34,6 +34,10 @@ public partial class ApplicantController(SmsHelper smsSender, RegStepStatusBusin
     public async Task<IActionResult> GetMembers() =>
         Ok(Mapper.Map<List<MemberInfoDto>>(await Business.GetMembers(ApplicantId)));
 
+    [HttpGet]
+    public async Task<IActionResult> GetMembersCount() =>
+        Ok(await Business.GetMembersCount(ApplicantId));
+
     [HttpPost("{regStepId}")]
     public async Task<IActionResult> AddMember(int regStepId, SignupDto addMemberForm)
     => Status(await Business.AddMember(ApplicantId, regStepId, addMemberForm.FirstName, addMemberForm.LastName, addMemberForm.NationalCode, addMemberForm.Mobile));

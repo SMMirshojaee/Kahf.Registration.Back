@@ -56,7 +56,7 @@ public class ApplicantFormValueController(SmsHelper smsSender, ApplicantFormValu
                 startStatus = regStep?.RegStepStatuses.FirstOrDefault(e => e.IsNotChecked);
             applicant.StatusId = startStatus?.Id;
             report = await applicantBusiness.SaveChanges();
-            if (report.Successful && !memberId.HasValue)
+            if (report.Successful && !memberId.HasValue && regStep?.CreateTrackingCode == true)
             {
                 await smsSender.Send(applicant.Id, applicant.NationalNumber, applicant.PhoneNumber, $"کد رهگیری شما: {applicant.TrackingCode}", null);
                 return Ok(applicant.TrackingCode);

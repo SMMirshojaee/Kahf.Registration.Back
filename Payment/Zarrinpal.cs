@@ -54,7 +54,7 @@ namespace Payment
                 Content = response.Content,
             }; ;
         }
-        public async Task<ZarrinpalResponse> SendRequest(string firstName, string lastName, int id, int amount, int orderId, string mobile)
+        public async Task<ZarrinpalResponse> SendRequest(string firstName, string lastName, int id, int amount, int orderId, string mobile, bool devMode)
         {
             RestClient client = new RestClient(_requestApi);
             RestRequest request = new RestRequest
@@ -66,7 +66,7 @@ namespace Payment
             {
                 merchant_id = _merchantId,
                 amount = amount,
-                callback_url = _callbackUrl,
+                callback_url = devMode ? _localCallbackUrl : _callbackUrl,
                 description = $"{id}/{firstName}-{lastName}/{amount:N0}",
                 metadata = new { mobile = mobile },
                 currency = "IRR",

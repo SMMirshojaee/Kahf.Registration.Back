@@ -204,6 +204,10 @@ public partial class RegContext : DbContext
                 .HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Description).HasMaxLength(1000);
 
+            entity.HasOne(d => d.LoanStatus).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.LoanStatusId)
+                .HasConstraintName("FK_Payment_RegStepStatuses");
+
             entity.HasOne(d => d.RegStep).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.RegStepId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -233,7 +237,7 @@ public partial class RegContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Description).HasMaxLength(4000);
             entity.Property(e => e.MemberLimit).HasDefaultValue((byte)0);
             entity.Property(e => e.Title).HasMaxLength(100);
 
