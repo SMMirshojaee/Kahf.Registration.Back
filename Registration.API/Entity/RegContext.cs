@@ -30,6 +30,8 @@ public partial class RegContext : DbContext
 
     public virtual DbSet<Reg> Regs { get; set; }
 
+    public virtual DbSet<RegCost> RegCosts { get; set; }
+
     public virtual DbSet<RegStep> RegSteps { get; set; }
 
     public virtual DbSet<RegStepStatus> RegStepStatuses { get; set; }
@@ -193,6 +195,16 @@ public partial class RegContext : DbContext
             entity.Property(e => e.RequestDate).HasPrecision(0);
             entity.Property(e => e.VerifyContent).HasMaxLength(4000);
             entity.Property(e => e.VerifyDate).HasPrecision(0);
+
+            entity.HasOne(d => d.Applicant).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.ApplicantId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Orders_Applicants");
+
+            entity.HasOne(d => d.RegStep).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.RegStepId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Orders_RegSteps");
         });
 
         modelBuilder.Entity<Models.Payment>(entity =>
@@ -227,6 +239,22 @@ public partial class RegContext : DbContext
             entity.Property(e => e.ImageAddress).HasMaxLength(50);
             entity.Property(e => e.StartDate).HasPrecision(0);
             entity.Property(e => e.Title).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<RegCost>(entity =>
+        {
+            entity.ToTable("RegCosts", "reg");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(4000);
+            entity.Property(e => e.Title).HasMaxLength(500);
+
+            entity.HasOne(d => d.Reg).WithMany(p => p.RegCosts)
+                .HasForeignKey(d => d.RegId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RegCosts_Regs");
         });
 
         modelBuilder.Entity<RegStep>(entity =>

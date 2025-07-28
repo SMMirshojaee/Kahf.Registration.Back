@@ -76,5 +76,10 @@ namespace Registration.API.Controllers
 
             return Ok();
         }
+
+        [HttpGet("{regId}")]
+        [Authorize("Admin")]
+        public async Task<IActionResult> GetWithOrders(int regId)
+            => Ok(await Business.GetWithOrders(regId));
     }
 }

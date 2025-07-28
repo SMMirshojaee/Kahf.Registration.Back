@@ -34,3 +34,17 @@ public class OrderDto
 
     public long? RefId { get; set; }
 }
+
+public class ApplicantOrderDto
+{
+    public int Id { get; set; }
+    public int? StatusId { get; set; }
+    public string? StatusTitle { get; set; }
+    public string? StepTitle { get; set; }
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string NationalNumber { get; set; } = null!;
+    public string PhoneNumber { get; set; } = null!;
+    public int MembersCount { get; set; }
+    public List<OrderDto> Orders { get; set; } = new();
+}

@@ -174,12 +174,39 @@ namespace Registration.API.Controllers
             Order? order = await Business.GetByAuthority(authority);
             if (order is null)
                 return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=2");
+            ZarrinpalResponse verifyResponse;
+            if (!order.RegStepId.HasValue)
+            {
+                if (status.ToLower() != "ok")
+                {
+                    return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=1");
+                }
+                else
+                {
+                    verifyResponse = await paymentService.Verify(authority, order.Amount);
+                    if (!verifyResponse.Successful)
+                    {
+                        order.VerifyContent = verifyResponse.Content;
+                        order.VerifyStatus = verifyResponse.Code;
+                        order.VerifyDate = DateTime.Now;
 
-            RegStep regStep = (await regStepBusiness.GetByIdWithStatuses(order.RegStepId))!;
+                        await Business.SaveChanges();
+                        return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=3");
+                    }
+                    order.VerifyContent = verifyResponse.Content;
+                    order.VerifyStatus = verifyResponse.Code;
+                    order.RefId = verifyResponse.RefId;
+                    order.VerifyDate = DateTime.Now;
+                    await Business.SaveChanges();
+                    return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=0&refId={verifyResponse.RefId}");
+
+                }
+            }
+            RegStep regStep = (await regStepBusiness.GetByIdWithStatuses(order.RegStepId.Value))!;
 
             RegStepStatus rejectStatus = regStep.RegStepStatuses.First(e => e.IsRejected);
 
-            Applicant applicant = (await applicantBusiness.GetById(order.ApplicantId, true))!;
+            Applicant applicant = (await applicantBusiness.GetById(order.ApplicantId!.Value, true))!;
 
             if (status.ToLower() != "ok")
             {
@@ -188,7 +215,7 @@ namespace Registration.API.Controllers
                 return Redirect($"{AppSetting.FrontPaymentPage}?authority={authority}&messageCode=1");
             }
 
-            ZarrinpalResponse verifyResponse = await paymentService.Verify(authority, order.Amount);
+            verifyResponse = await paymentService.Verify(authority, order.Amount);
             if (!verifyResponse.Successful)
             {
                 order.VerifyContent = verifyResponse.Content;

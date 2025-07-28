@@ -35,6 +35,8 @@ public partial class Applicant
 
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
     public virtual Reg Reg { get; set; } = null!;
 
     public virtual RegStepStatus? Status { get; set; }

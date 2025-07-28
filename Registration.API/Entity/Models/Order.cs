@@ -9,9 +9,9 @@ public partial class Order
 
     public override DateTime CreatedDate { get; set; }
 
-    public int ApplicantId { get; set; }
+    public int? ApplicantId { get; set; }
 
-    public int RegStepId { get; set; }
+    public int? RegStepId { get; set; }
 
     public string NationalNumber { get; set; } = null!;
 
@@ -32,4 +32,8 @@ public partial class Order
     public DateTime? VerifyDate { get; set; }
 
     public long? RefId { get; set; }
+
+    public virtual Applicant? Applicant { get; set; }
+
+    public virtual RegStep? RegStep { get; set; }
 }

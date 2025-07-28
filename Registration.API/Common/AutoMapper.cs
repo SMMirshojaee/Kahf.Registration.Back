@@ -12,6 +12,7 @@ namespace Registration.API.Common
             CreateMap<FieldOption, FieldOptionDto>().ReverseMap();
 
             CreateMap<Reg, RegDto>().ReverseMap();
+            CreateMap<RegCost, RegCostDto>().ReverseMap();
             CreateMap<Step, StepDto>().ReverseMap();
             CreateMap<RegStep, RegStepDto>().ReverseMap();
             CreateMap<RegStepStatus, RegStepStatusDto>().ReverseMap();

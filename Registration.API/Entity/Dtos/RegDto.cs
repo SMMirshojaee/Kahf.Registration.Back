@@ -72,3 +72,16 @@ public class StepDto
 
     public virtual ICollection<RegStepDto> RegSteps { get; set; } = new List<RegStepDto>();
 }
+
+public class RegCostDto
+{
+    public int Id { get; set; }
+
+    public int RegId { get; set; }
+
+    public string Title { get; set; } = null!;
+
+    public int Amount { get; set; }
+
+    public string? Description { get; set; }
+}

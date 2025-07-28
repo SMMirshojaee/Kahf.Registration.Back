@@ -219,4 +219,21 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             .Include(e => e.Status)
             .Include(e => e.Messages)
             .ToListAsync();
+
+    public Task<List<ApplicantOrderDto>> GetWithOrders(int regId) =>
+        Where(e => e.RegId == regId && e.StatusId.HasValue && !e.LeaderId.HasValue)
+            .Select(e => new ApplicantOrderDto
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                NationalNumber = e.NationalNumber,
+                PhoneNumber = e.PhoneNumber,
+                StatusId = e.StatusId,
+                StatusTitle = e.Status != null ? e.Status.Title : string.Empty,
+                StepTitle = e.Status != null ? e.Status.RegStep.Title : string.Empty,
+                MembersCount = e.InverseLeader.Count,
+                Orders = Mapper.Map<List<OrderDto>>(e.Orders.Where(o => o.RequestStatus == 100 && o.VerifyStatus == 100))
+            })
+            .ToListAsync();
 }

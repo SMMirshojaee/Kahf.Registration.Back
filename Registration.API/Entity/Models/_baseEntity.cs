@@ -15,6 +15,7 @@ partial class Message : BaseEntity;
 partial class Order : BaseEntity;
 partial class Payment : BaseEntity;
 partial class Reg : BaseEntity;
+partial class RegCost : BaseEntity;
 partial class RegStep : BaseEntity;
 partial class RegStepStatus : BaseEntity;
 partial class Step : BaseEntity;
