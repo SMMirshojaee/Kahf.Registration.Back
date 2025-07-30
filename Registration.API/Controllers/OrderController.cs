@@ -53,7 +53,8 @@ namespace Registration.API.Controllers
                     return InternalServerError("خطا در ثبت وام");
 
                 await smsHelper.Send(ApplicantId, NationalCode, Mobile,
-                    "درخواست وام شما ثبت شد.\r\nلطفاً در روزهای سه شنبه و چهارشنبه، ساعت ۱۶ الی ۱۸، به همراه کارت ملی و سفته (با حداقل مبلغ کل وام)، به آدرس زیر مراجعه نمایید.\r\nخیابان کریمخان، ابتدای حافظ، کوچه هورچهر پلاک ۱۳ واحد ۴", null);
+                    "زائر گرامی درخواست وام شما ثبت شد. لطفا جهت پیگیری مراحل دریافت وام، به آی دی @saber_azad در پیامرسان بله پیام بدهید",
+                    null);
 
 
                 if (payment.LoanStatusId.HasValue)
