@@ -236,4 +236,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
                 Orders = Mapper.Map<List<OrderDto>>(e.Orders.Where(o => o.RequestStatus == 100 && o.VerifyStatus == 100))
             })
             .ToListAsync();
+
+    public Task<List<Applicant>> GetByIds(List<int> ids)
+        => Where(e => ids.Contains(e.Id)).ToListAsync();
 }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Text;
 using Registration.API.Business;
 using SMS;
@@ -40,6 +41,32 @@ namespace Registration.API.Common
             if (response is null)
                 return ActionReport.Error(HttpStatusCode.InternalServerError);
             message.Status = response.Messages.First().Status;
+            return await messageBusiness.SaveChanges();
+        }
+        public async Task<ActionReport> Send(List<Applicant> applicants, string text, int? userId)
+        {
+            List<Message> messages = applicants.Select(e => new Message
+            {
+                ApplicantId = e.Id,
+                NationalNumber = e.NationalNumber,
+                Mobile = e.PhoneNumber,
+                Text = text,
+                UserId = userId,
+            }).ToList();
+
+            ActionReport report = await messageBusiness.Add(messages);
+            if (!report.Successful)
+                return ActionReport.Error(report);
+
+            Response? response = await smsService.Send(text, applicants.Select(e => e.PhoneNumber).ToArray());
+            if (response is null)
+                return ActionReport.Error(HttpStatusCode.InternalServerError);
+            foreach (Message message in messages)
+            {
+                MagfaMessage? sms = response.Messages.FirstOrDefault(e => e.Recipient == message.Mobile);
+                if (sms is null) continue;
+                message.Status = sms.Status;
+            }
             return await messageBusiness.SaveChanges();
         }
 
