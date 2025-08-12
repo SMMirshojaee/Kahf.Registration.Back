@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using Registration.API.Business;
+using Registration.API.Entity.Models;
 using SMS;
 
 namespace Registration.API.Common
@@ -37,10 +38,23 @@ namespace Registration.API.Common
             if (!report.Successful)
                 return ActionReport.Error(report);
 
-            Response? response = await smsService.Send(text, mobile);
+            Response? response = await smsService.Send(text, (message.Id, mobile));
             if (response is null)
                 return ActionReport.Error(HttpStatusCode.InternalServerError);
-            message.Status = response.Messages.First().Status;
+
+            Thread.Sleep(2000);
+
+            StatusResponse? statusReport = await smsService.GetStatuses([response.Messages.First().Id]);
+            if (statusReport is not null)
+            {
+                MessageStatus? magfaMessage = statusReport.Dlrs.FirstOrDefault();
+                if (magfaMessage == null)
+                {
+                    return ActionReport.Success();
+                }
+                message.Status = magfaMessage.Status;
+            }
+
             return await messageBusiness.SaveChanges();
         }
         public async Task<ActionReport> Send(List<Applicant> applicants, string text, int? userId)
@@ -52,20 +66,29 @@ namespace Registration.API.Common
                 Mobile = e.PhoneNumber,
                 Text = text,
                 UserId = userId,
+                Status = 0
             }).ToList();
 
             ActionReport report = await messageBusiness.Add(messages);
             if (!report.Successful)
                 return ActionReport.Error(report);
 
-            Response? response = await smsService.Send(text, applicants.Select(e => e.PhoneNumber).ToArray());
+            Response? response = await smsService.Send(text, messages.Select(e => (e.Id, e.Mobile)).ToArray());
             if (response is null)
                 return ActionReport.Error(HttpStatusCode.InternalServerError);
-            foreach (Message message in messages)
+
+            Thread.Sleep(2000);
+            StatusResponse? statusReport = await smsService.GetStatuses(response.Messages.Select(e => e.Id));
+            if (statusReport is not null)
             {
-                MagfaMessage? sms = response.Messages.FirstOrDefault(e => e.Recipient == message.Mobile);
-                if (sms is null) continue;
-                message.Status = sms.Status;
+                foreach (MagfaMessage magfaMessage in response.Messages)
+                {
+                    MessageStatus? status = statusReport.Dlrs.FirstOrDefault(e => e.Mid == magfaMessage.Id);
+                    if (status is null || status.Status == -1) continue;
+                    Message? message = messages.FirstOrDefault(e => magfaMessage.Recipient.EndsWith(e.Mobile[^9..]));
+                    if (message is null) continue;
+                    message.Status = status.Status;
+                }
             }
             return await messageBusiness.SaveChanges();
         }

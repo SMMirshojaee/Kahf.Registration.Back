@@ -45,6 +45,7 @@ public class ApplicantOrderDto
     public string LastName { get; set; } = null!;
     public string NationalNumber { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
+    public string? TrackingCode { get; set; }
     public int MembersCount { get; set; }
     public List<OrderDto> Orders { get; set; } = new();
 }

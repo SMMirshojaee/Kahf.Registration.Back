@@ -40,8 +40,9 @@ public class UserController(Magfa smsSender, UserBusiness u, IMapper m, IOptions
         //SmsIr sms = new();
         //await sms.SendBuck("سلام عزیزم", ["09128486146", "09198114632"]);
 
-        var message = await _smsSender.Send("تست پیامک سامانه کهف", "09128486146", "989919228231");
-        return Ok(message);
+        //var message = await _smsSender.Send("تست پیامک سامانه کهف", "09128486146", "989919228231");
+        //return Ok(message);
+        return NotFound();
     }
 
 

@@ -24,7 +24,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             if (applicant.NationalNumber == nationalCode && applicant.PhoneNumber == mobile && string.IsNullOrEmpty(applicant.TrackingCode))
             {
                 token = GenerateJwtTokenForApplicant(regId, applicant.FirstName, applicant.LastName, applicant.Id,
-                    nationalCode, mobile, appSetting);
+                    nationalCode, mobile, applicant.IsServant, appSetting);
                 return ActionReport<TokenDto>.Success(token);
             }
             else
@@ -43,7 +43,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         {
             return ActionReport<TokenDto>.Error(report);
         }
-        token = GenerateJwtTokenForApplicant(regId, firstName, lastName, applicant.Id, nationalCode, mobile, appSetting);
+        token = GenerateJwtTokenForApplicant(regId, firstName, lastName, applicant.Id, nationalCode, mobile, false, appSetting);
         return ActionReport<TokenDto>.Success(token);
     }
     public async Task<ActionReport<TokenDto>> SingIn(int regId, string nationalCode, string mobile, string trackingCode, AppSettings appSetting)
@@ -58,12 +58,12 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         if (applicant is null)
             return ActionReport<TokenDto>.Error(HttpStatusCode.NotFound, "اطلاعات شما یافت نشد");
 
-        TokenDto token = GenerateJwtTokenForApplicant(regId, applicant.FirstName, applicant.LastName, applicant.Id, nationalCode, mobile, appSetting);
+        TokenDto token = GenerateJwtTokenForApplicant(regId, applicant.FirstName, applicant.LastName, applicant.Id, nationalCode, mobile, applicant.IsServant, appSetting);
         return ActionReport<TokenDto>.Success(token);
     }
 
 
-    private TokenDto GenerateJwtTokenForApplicant(int regId, string firstName, string lastName, int applicantId, string nationalCode, string mobile, AppSettings appSetting)
+    private TokenDto GenerateJwtTokenForApplicant(int regId, string firstName, string lastName, int applicantId, string nationalCode, string mobile, bool? isServant, AppSettings appSetting)
     {
         SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSetting.SecretKey));
         SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -76,7 +76,8 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
             new(ClaimTypes.SerialNumber, applicantId.ToString()),
             new(ClaimTypes.PrimarySid, regId.ToString()),
             new(ClaimTypes.NameIdentifier, nationalCode),
-            new(ClaimTypes.MobilePhone, mobile)
+            new(ClaimTypes.MobilePhone, mobile),
+            new("IsServant", (isServant == true).ToString())
         ];
 
         JwtSecurityToken token = new JwtSecurityToken(
@@ -229,6 +230,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
                 LastName = e.LastName,
                 NationalNumber = e.NationalNumber,
                 PhoneNumber = e.PhoneNumber,
+                TrackingCode = e.TrackingCode,
                 StatusId = e.StatusId,
                 StatusTitle = e.Status != null ? e.Status.Title : string.Empty,
                 StepTitle = e.Status != null ? e.Status.RegStep.Title : string.Empty,
