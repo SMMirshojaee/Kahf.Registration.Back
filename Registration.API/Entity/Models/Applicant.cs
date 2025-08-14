@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Registration.API.Entity.Models;
+﻿namespace Registration.API.Entity.Models;
 
 public partial class Applicant
 {
@@ -28,6 +25,8 @@ public partial class Applicant
     public bool? IsServant { get; set; }
 
     public string? Description { get; set; }
+
+    public virtual ICollection<ApplicantExtraCost> ApplicantExtraCosts { get; set; } = new List<ApplicantExtraCost>();
 
     public virtual ICollection<ApplicantFormValue> ApplicantFormValues { get; set; } = new List<ApplicantFormValue>();
 

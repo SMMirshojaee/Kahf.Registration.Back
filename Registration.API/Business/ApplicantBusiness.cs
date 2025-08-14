@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
 using System.Security.Claims;
@@ -194,20 +195,24 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         return await SaveChanges();
     }
 
-    public async Task<ActionReport<List<Applicant>>> TransferAccepted(int regStepId, int nextStatusId)
+    public async Task<ActionReport<List<Applicant>>> TransferAccepted(int regStepId, List<int> acceptedIds, int nextStatusId)
     {
         RegStep? regStep = await regStepBusiness.GetByIdWithStatuses(regStepId);
         if (regStep is null)
             return ActionReport<List<Applicant>>.Error(HttpStatusCode.NotFound);
-        int acceptedStatusId = regStep.RegStepStatuses.First(e => e.IsAccepted).Id;
-        List<Applicant> acceptedApplicants = await Where(e => e.StatusId == acceptedStatusId, true).ToListAsync();
+
+        List<int> statusIds = regStep.RegStepStatuses.Where(e => acceptedIds.Contains(e.Id)).Select(e => e.Id).ToList();
+        if (statusIds.Count == 0)
+            return ActionReport<List<Applicant>>.Error(HttpStatusCode.BadRequest);
+
+        List<Applicant> acceptedApplicants = await Where(e => e.RegId == regStep.RegId && e.StatusId.HasValue && statusIds.Contains(e.StatusId.Value), true).ToListAsync();
         if (!acceptedApplicants.Any())
             return ActionReport<List<Applicant>>.Success(new());
+        
         foreach (Applicant applicant in acceptedApplicants)
-        {
             applicant.StatusId = nextStatusId;
-        }
-        var report = await SaveChanges();
+
+        ActionReport report = await SaveChanges();
         if (report.Successful)
             return ActionReport<List<Applicant>>.Success(acceptedApplicants);
         return ActionReport<List<Applicant>>.Error(report);
@@ -235,7 +240,8 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
                 StatusTitle = e.Status != null ? e.Status.Title : string.Empty,
                 StepTitle = e.Status != null ? e.Status.RegStep.Title : string.Empty,
                 MembersCount = e.InverseLeader.Count,
-                Orders = Mapper.Map<List<OrderDto>>(e.Orders.Where(o => o.RequestStatus == 100 && o.VerifyStatus == 100))
+                Orders = Mapper.Map<List<OrderDto>>(e.Orders.Where(o => o.RequestStatus == 100 && o.VerifyStatus == 100)),
+                ApplicantExtraCosts = Mapper.Map<List<ApplicantExtraCostDto>>(e.ApplicantExtraCosts)
             })
             .ToListAsync();
 

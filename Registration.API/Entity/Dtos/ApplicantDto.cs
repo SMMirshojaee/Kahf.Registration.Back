@@ -24,7 +24,7 @@ public class ApplicantInfoDto
 
     public string? TrackingCode { get; set; }
 
-    public virtual List<ApplicantInfoDto> InverseLeader { get; set; } = new List<ApplicantInfoDto>();
+    public virtual List<ApplicantInfoDto> InverseLeader { get; set; } = new  ();
 
 }
 public class ApplicantDto

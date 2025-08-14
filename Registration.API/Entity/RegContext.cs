@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Registration.API.Entity.Models;
 
 namespace Registration.API.Entity;
+using Payment = Models.Payment;
 
 public partial class RegContext : DbContext
 {
@@ -13,6 +12,8 @@ public partial class RegContext : DbContext
     }
 
     public virtual DbSet<Applicant> Applicants { get; set; }
+
+    public virtual DbSet<ApplicantExtraCost> ApplicantExtraCosts { get; set; }
 
     public virtual DbSet<ApplicantFormValue> ApplicantFormValues { get; set; }
 
@@ -26,7 +27,7 @@ public partial class RegContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<Models.Payment> Payments { get; set; }
+    public virtual DbSet<Payment> Payments { get; set; }
 
     public virtual DbSet<Reg> Regs { get; set; }
 
@@ -76,6 +77,24 @@ public partial class RegContext : DbContext
             entity.HasOne(d => d.Status).WithMany(p => p.Applicants)
                 .HasForeignKey(d => d.StatusId)
                 .HasConstraintName("FK_Applicants_RegStepStatuses");
+        });
+
+        modelBuilder.Entity<ApplicantExtraCost>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_ApplicantCosts");
+
+            entity.ToTable("ApplicantExtraCosts", "applicant");
+
+            entity.Property(e => e.CreatedDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(4000);
+            entity.Property(e => e.Title).HasMaxLength(500);
+
+            entity.HasOne(d => d.Applicant).WithMany(p => p.ApplicantExtraCosts)
+                .HasForeignKey(d => d.ApplicantId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ApplicantExtraCosts_Applicants");
         });
 
         modelBuilder.Entity<ApplicantFormValue>(entity =>
@@ -207,7 +226,7 @@ public partial class RegContext : DbContext
                 .HasConstraintName("FK_Orders_RegSteps");
         });
 
-        modelBuilder.Entity<Models.Payment>(entity =>
+        modelBuilder.Entity<Payment>(entity =>
         {
             entity.ToTable("Payment", "pay");
 

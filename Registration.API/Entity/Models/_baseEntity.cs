@@ -7,6 +7,7 @@ public abstract class BaseEntity
 }
 
 partial class ApplicantFormValue : BaseEntity;
+partial class ApplicantExtraCost : BaseEntity;
 partial class Applicant : BaseEntity;
 partial class FieldOption : BaseEntity;
 partial class Field : BaseEntity;

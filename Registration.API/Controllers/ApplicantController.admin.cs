@@ -63,9 +63,9 @@ namespace Registration.API.Controllers
 
         [HttpPut("{regStepId}/{nextStatusId}/{sendSms}")]
         [Authorize("Admin")]
-        public async Task<IActionResult> TransferToNextStep(int regStepId, int nextStatusId, bool sendSms, [FromBody] string? smsText)
+        public async Task<IActionResult> TransferToNextStep(int regStepId, int nextStatusId, bool sendSms, [FromBody] string? smsText, [FromQuery] List<int> ids)
         {
-            ActionReport<List<Applicant>> report = await Business.TransferAccepted(regStepId, nextStatusId);
+            ActionReport<List<Applicant>> report = await Business.TransferAccepted(regStepId, ids, nextStatusId);
             if (!report.Successful)
                 return Status(report);
             if (report.Output is null || !report.Output.Any())
@@ -74,12 +74,17 @@ namespace Registration.API.Controllers
                 foreach (Applicant applicant in report.Output)
                     await smsSender.Send(applicant.Id, applicant.NationalNumber, applicant.PhoneNumber, smsText, UserId);
 
-            return Ok();
+            return Ok(report.Output.Count);
         }
 
         [HttpGet("{regId}")]
         [Authorize("Admin")]
         public async Task<IActionResult> GetWithOrders(int regId)
             => Ok(await Business.GetWithOrders(regId));
+
+        [HttpDelete("{id}")]
+        [Authorize("SuperAdmin")]
+        public async Task<IActionResult> RemoveExtraCost(int id)
+            => Status(await applicantExtraCostBusiness.Delete(id));
     }
 }
