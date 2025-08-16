@@ -74,4 +74,8 @@ public partial class ApplicantController(ApplicantExtraCostBusiness applicantExt
         return Status(await Business.SaveChanges());
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetExtraCosts()
+        => Ok<List<ApplicantExtraCostDto>>(await applicantExtraCostBusiness.GetByApplicantId(ApplicantId));
+
 }

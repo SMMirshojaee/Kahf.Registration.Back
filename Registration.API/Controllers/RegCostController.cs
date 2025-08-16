@@ -7,9 +7,8 @@ using Registration.API.Business;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
 
-namespace Registration.API.Controllers.Admin;
+namespace Registration.API.Controllers;
 
-[Authorize("Admin")]
 public class RegCostController(
     RegCostBusiness business,
     IMapper mapper,

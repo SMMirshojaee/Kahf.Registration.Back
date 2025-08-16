@@ -1,4 +1,7 @@
-﻿namespace Registration.API.Entity.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Registration.API.Entity.Models;
 
 public partial class Applicant
 {

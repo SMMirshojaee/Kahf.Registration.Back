@@ -14,6 +14,8 @@ public class PaymentDto
 
 public class OrderDto
 {
+    public int Id { get; set; }
+
     public DateTime CreatedDate { get; set; }
 
     public int ApplicantId { get; set; }
@@ -33,4 +35,8 @@ public class OrderDto
     public DateTime? VerifyDate { get; set; }
 
     public long? RefId { get; set; }
+
+    public long? LoanId { get; set; }
+
+    public ICollection<OrderDto>? InverseLoan { get; set; }
 }

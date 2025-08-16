@@ -105,7 +105,7 @@ namespace Registration.API.Controllers
         }
 
         [HttpGet("{regStepId}")]
-        public async Task<IActionResult> SendRequest(int regStepId)
+        public async Task<IActionResult> SendRequestByRegStepId(int regStepId)
         {
             Payment? payment = await paymentBusiness.GetByRegStepId(regStepId);
             if (payment == null)
@@ -134,6 +134,42 @@ namespace Registration.API.Controllers
             report = await Business.UpdateRequest(newOrder.Id, requestReport.Authority, requestReport.Content, requestReport.Code);
             return Ok(requestReport.RedirectUrl);
         }
+
+        [HttpGet("{amount}/{loanId?}")]
+        public async Task<IActionResult> SendDirectRequest(int amount, int? loanId)
+        {
+            Order? loan = null;
+            if (loanId.HasValue)
+            {
+                loan = await Business.GetById(loanId.Value);
+                if (loan is null)
+                    return NotFound();
+            }
+            Order newOrder = new Order
+            {
+                ApplicantId = ApplicantId,
+                Amount = amount,
+                NationalNumber = NationalCode,
+                LoanId = loanId,
+            };
+            ActionReport report = await Business.Add(newOrder);
+            if (!report.Successful)
+                return InternalServerError("خطا در ثبت سفارش");
+
+            Applicant? applicant = await applicantBusiness.GetById(ApplicantId);
+
+            ZarrinpalResponse requestReport = await paymentService.SendRequest(id: ApplicantId, firstName: applicant.FirstName, lastName: applicant.LastName, amount: newOrder.Amount, orderId: newOrder.Id, mobile: Mobile, devMode: env.IsDevelopment());
+            if (!requestReport.Successful)
+            {
+                await Business.UpdateRequest(newOrder.Id, requestReport.Authority, requestReport.Content, requestReport.Code);
+                return InternalServerError("خطا در ارتباط با درگاه بانکی");
+            }
+
+            report = await Business.UpdateRequest(newOrder.Id, requestReport.Authority, requestReport.Content, requestReport.Code);
+            return Ok(requestReport.RedirectUrl);
+        }
+
+
         [HttpGet("{regStepId}/{cash}")]
         public async Task<IActionResult> PayCash(int regStepId, int cash)
         {
@@ -166,7 +202,19 @@ namespace Registration.API.Controllers
             => Ok<List<OrderDto>>(await Business.Where(e => e.ApplicantId == ApplicantId &&
                                                             e.RegStepId == regStepId &&
                                                             e.RequestStatus == 100 &&
-                                                            e.VerifyStatus == 100).ToListAsync());
+                                                            e.VerifyStatus == 100 &&
+                                                            !e.LoanId.HasValue)
+                .Include(e => e.InverseLoan)
+                .ToListAsync());
+
+        [HttpGet()]
+        public async Task<IActionResult> GetAll()
+            => Ok<List<OrderDto>>(await Business.Where(e => e.ApplicantId == ApplicantId &&
+                                                            e.RequestStatus == 100 &&
+                                                            e.VerifyStatus == 100 &&
+                                                            !e.LoanId.HasValue)
+                .Include(e => e.InverseLoan.Where(il => il.RequestStatus == 100 && il.VerifyStatus == 100))
+                .ToListAsync());
 
         [HttpGet]
         [AllowAnonymous]

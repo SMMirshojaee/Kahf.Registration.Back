@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Registration.API.Entity.Models;
 
 namespace Registration.API.Entity;
-using Payment = Models.Payment;
 
 public partial class RegContext : DbContext
 {
@@ -27,7 +28,7 @@ public partial class RegContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<Models.Payment> Payments { get; set; }
 
     public virtual DbSet<Reg> Regs { get; set; }
 
@@ -220,13 +221,17 @@ public partial class RegContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Orders_Applicants");
 
+            entity.HasOne(d => d.Loan).WithMany(p => p.InverseLoan)
+                .HasForeignKey(d => d.LoanId)
+                .HasConstraintName("FK_Orders_Orders");
+
             entity.HasOne(d => d.RegStep).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.RegStepId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Orders_RegSteps");
         });
 
-        modelBuilder.Entity<Payment>(entity =>
+        modelBuilder.Entity<Models.Payment>(entity =>
         {
             entity.ToTable("Payment", "pay");
 
