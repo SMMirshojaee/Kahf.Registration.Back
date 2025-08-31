@@ -26,6 +26,7 @@ namespace Registration.API.Common
 
             CreateMap<Entity.Models.Payment, PaymentDto>().ReverseMap();
             CreateMap<Order, OrderDto>().ReverseMap();
+            CreateMap<Order, InstallmentDto>().ReverseMap();
         }
     }
 }

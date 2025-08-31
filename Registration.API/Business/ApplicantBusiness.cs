@@ -208,7 +208,7 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         List<Applicant> acceptedApplicants = await Where(e => e.RegId == regStep.RegId && e.StatusId.HasValue && statusIds.Contains(e.StatusId.Value), true).ToListAsync();
         if (!acceptedApplicants.Any())
             return ActionReport<List<Applicant>>.Success(new());
-        
+
         foreach (Applicant applicant in acceptedApplicants)
             applicant.StatusId = nextStatusId;
 
@@ -240,7 +240,11 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
                 StatusTitle = e.Status != null ? e.Status.Title : string.Empty,
                 StepTitle = e.Status != null ? e.Status.RegStep.Title : string.Empty,
                 MembersCount = e.InverseLeader.Count,
-                Orders = Mapper.Map<List<OrderDto>>(e.Orders.Where(o => o.RequestStatus == 100 && o.VerifyStatus == 100)),
+                Orders = Mapper.Map<List<OrderDto>>(
+                    (from order in context.Orders
+                     where order.ApplicantId == e.Id && order.RequestStatus == 100 && order.VerifyStatus == 100
+                     select order).Include(o => o.InverseLoan.Where(lo=>lo.RequestStatus == 100 && lo.VerifyStatus == 100))
+                    ),
                 ApplicantExtraCosts = Mapper.Map<List<ApplicantExtraCostDto>>(e.ApplicantExtraCosts)
             })
             .ToListAsync();

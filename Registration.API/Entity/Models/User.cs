@@ -18,4 +18,6 @@ public partial class User
     public string Role { get; set; } = null!;
 
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

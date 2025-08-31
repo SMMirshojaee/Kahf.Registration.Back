@@ -208,6 +208,7 @@ public partial class RegContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(4000);
             entity.Property(e => e.NationalNumber)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -229,6 +230,10 @@ public partial class RegContext : DbContext
                 .HasForeignKey(d => d.RegStepId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Orders_RegSteps");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_Orders_Users");
         });
 
         modelBuilder.Entity<Models.Payment>(entity =>

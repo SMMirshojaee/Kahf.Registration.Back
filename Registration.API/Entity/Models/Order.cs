@@ -35,6 +35,10 @@ public partial class Order
 
     public int? LoanId { get; set; }
 
+    public string? Description { get; set; }
+
+    public int? UserId { get; set; }
+
     public virtual Applicant? Applicant { get; set; }
 
     public virtual ICollection<Order> InverseLoan { get; set; } = new List<Order>();
@@ -42,4 +46,6 @@ public partial class Order
     public virtual Order? Loan { get; set; }
 
     public virtual RegStep? RegStep { get; set; }
+
+    public virtual User? User { get; set; }
 }

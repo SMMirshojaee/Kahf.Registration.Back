@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using AutoMapper;
 using Registration.API.Common;
+using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Business
 {
@@ -27,5 +28,20 @@ namespace Registration.API.Business
 
         public Task<Order?> GetByAuthority(string authority)
             => FirstOrDefaultAsync(e => e.Authority == authority, true);
+
+        public async Task<ActionReport<OrderDto>> InsertInstallment(int userId, InstallmentDto newInstallment)
+        {
+            Order? newOrder = Mapper.Map<Order>(newInstallment);
+            newOrder.UserId = userId;
+            newOrder.VerifyDate = newOrder.RequestDate = newInstallment.Date;
+            newOrder.RequestStatus = newOrder.VerifyStatus = 100;
+            ActionReport report = await Add(newOrder);
+            if (report.Successful)
+            {
+                return ActionReport<OrderDto>.Success(Mapper.Map<OrderDto>(newOrder));
+            }
+
+            return ActionReport<OrderDto>.Error(report);
+        }
     }
 }

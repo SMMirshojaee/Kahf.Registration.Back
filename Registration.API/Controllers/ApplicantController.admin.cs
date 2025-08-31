@@ -86,5 +86,21 @@ namespace Registration.API.Controllers
         [Authorize("SuperAdmin")]
         public async Task<IActionResult> RemoveExtraCost(int id)
             => Status(await applicantExtraCostBusiness.Delete(id));
+
+        [HttpPost]
+        [Authorize("SuperAdmin")]
+        public async Task<IActionResult> InsertInstallment([FromQuery] DateTime date, [FromBody] InstallmentDto newInstallment)
+        {
+            newInstallment.Date = date;
+            ActionReport<OrderDto> report = await orderBusiness.InsertInstallment(UserId, newInstallment);
+            return Status(report);
+        }
+        
+        [HttpDelete("{id}")]
+        [Authorize("SuperAdmin")]
+        public async Task<IActionResult> RemoveInstallment(int id)
+        {
+            return Status(await orderBusiness.Delete(id));
+        }
     }
 }

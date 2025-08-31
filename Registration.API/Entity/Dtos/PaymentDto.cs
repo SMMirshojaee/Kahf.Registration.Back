@@ -38,5 +38,17 @@ public class OrderDto
 
     public long? LoanId { get; set; }
 
+    public string? Description { get; set; }
+
     public ICollection<OrderDto>? InverseLoan { get; set; }
+}
+
+public class InstallmentDto
+{
+    public required int Amount { get; set; }
+    public required DateTime Date { get; set; }
+    public required int ApplicantId { get; set; }
+    public required int LoanId { get; set; }
+    public required string NationalNumber { get; set; }
+    public string? Description { get; set; }
 }
