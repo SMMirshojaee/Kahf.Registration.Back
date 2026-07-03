@@ -43,7 +43,7 @@ public class GenericBusiness<T>(RegContext context, IMapper mapper) where T : Ba
             };
         }
     }
-    internal async Task<ActionReport> Add(List<T> entities)
+    internal async Task<ActionReport> AddRange(List<T> entities)
     {
         try
         {

@@ -17,6 +17,7 @@ public class DefaultModule : Module
 
         builder.RegisterType(typeof(SmsHelper)).AsSelf();
         builder.RegisterType(typeof(Magfa)).AsSelf();
+        builder.RegisterType(typeof(SmsDotIr)).AsSelf();
         builder.RegisterType(typeof(Zarrinpal)).AsSelf();
         //builder.RegisterAssemblyTypes(assembly)
         //    .Where(t => t.Name.EndsWith("Business"))

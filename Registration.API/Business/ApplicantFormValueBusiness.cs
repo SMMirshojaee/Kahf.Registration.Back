@@ -52,7 +52,7 @@ public class ApplicantFormValueBusiness(ApplicantBusiness applicantBusiness, Reg
             });
 
             List<ApplicantFormValue>? valuesToInsert = Mapper.Map<List<ApplicantFormValue>>(values);
-            return await Add(valuesToInsert);
+            return await AddRange(valuesToInsert);
         }
         catch (Exception e)
         {
