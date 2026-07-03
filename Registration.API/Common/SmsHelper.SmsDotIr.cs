@@ -81,9 +81,9 @@ namespace Registration.API.Common
 				}),
 				Task.Delay(2000));
 			SmsIrResponse<List<StatusesData>> statusReport = await smsService.GetStatuses(sendResponse.Data.PackId);
-			if (!statusReport.IsSuccessful)
+			if (statusReport.IsSuccessful)
 			{
-				foreach (StatusesData status in statusReport.Data)
+				foreach (StatusesData status in statusReport.Data.Where(e=>e.DeliveryState.HasValue))
 				{
 					(Message Message, int Id)? messageAndId =
 						messageAndIds.FirstOrDefault(e => e.Id == status.MessageId);

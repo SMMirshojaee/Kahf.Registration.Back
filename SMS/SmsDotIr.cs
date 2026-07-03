@@ -21,6 +21,16 @@ public class SmsDotIr //: ISmsService
 
 	public async Task<SmsIrResponse<StatusData>> GetStatus(int messageId)
 	{
+		/*
+			1	رسیده
+			2	نرسیده به گوشی
+			3	رسیده به مخابرات
+			4	نرسیده به مخابرات
+			5	رسیده به اپراتور
+			6	ناموفق
+			7	لیست سیاه
+			8	نامشخص
+		 */
 		try
 		{
 			HttpClient httpClient = new HttpClient();
@@ -252,13 +262,13 @@ public sealed class StatusesData
 
 	public string MessageText { get; set; } = string.Empty;
 
-	public long SendDateTime { get; set; }
+	public int SendDateTime { get; set; }
 
 	public long LineNumber { get; set; }
 
 	public decimal Cost { get; set; }
 
-	public int DeliveryState { get; set; }
+	public byte? DeliveryState { get; set; }
 
-	public long DeliveryDateTime { get; set; }
+	public int? DeliveryDateTime { get; set; }
 }
