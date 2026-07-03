@@ -7,7 +7,7 @@ using SMS;
 
 namespace Registration.API.Common
 {
-    public class SmsHelper(Magfa smsService, MessageBusiness messageBusiness)
+    public class SmsHelper_Old(Magfa smsService, MessageBusiness messageBusiness)
     {
         //public static string ReplaceTemplates(this string smsText, string? firstName = null, string? lastName = null,
         //    string? nationalNumber = null, string? trackingCode = null)
@@ -42,7 +42,7 @@ namespace Registration.API.Common
             if (response is null)
                 return ActionReport.Error(HttpStatusCode.InternalServerError);
 
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
 
             StatusResponse? statusReport = await smsService.GetStatuses([response.Messages.First().Id]);
             if (statusReport is not null)
@@ -69,7 +69,7 @@ namespace Registration.API.Common
                 Status = 0
             }).ToList();
 
-            ActionReport report = await messageBusiness.Add(messages);
+            ActionReport report = await messageBusiness.AddRange(messages);
             if (!report.Successful)
                 return ActionReport.Error(report);
 
@@ -77,7 +77,7 @@ namespace Registration.API.Common
             if (response is null)
                 return ActionReport.Error(HttpStatusCode.InternalServerError);
 
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
             StatusResponse? statusReport = await smsService.GetStatuses(response.Messages.Select(e => e.Id));
             if (statusReport is not null)
             {
