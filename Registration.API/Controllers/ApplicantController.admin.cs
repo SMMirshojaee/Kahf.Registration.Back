@@ -1,11 +1,8 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Registration.API.Business;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
-using Registration.API.Entity.Models;
-using SMS;
 
 namespace Registration.API.Controllers
 {

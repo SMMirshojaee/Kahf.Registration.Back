@@ -1,11 +1,14 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace SMS;
 
 public class SmsDotIr //: ISmsService
 {
+	private readonly ILogger<SmsDotIr> _logger;
+	private readonly HttpClient _httpClient;
 	private readonly string _username = "09128486146";
 
 	private readonly string
@@ -13,11 +16,17 @@ public class SmsDotIr //: ISmsService
 			"LZMad0h8hJkptO2XUsoQBqPoLra0SplfED7AeNNbOBdcJSO6"; //sandbox="gNHd4YqkswMpgFbkDDYc3K9raScATVt6rtXsQJDMQNm3T4XK"
 
 	private readonly string _lineNumebr = "30007487123465";
-
 	private readonly string _sendApi = "https://api.sms.ir/v1/send"; //ارسال
 	private readonly string _buckApi = "https://api.sms.ir/v1/send/bulk"; //ارسال گروهی
 	private readonly string _likeToLikeApi = "https://api.sms.ir/v1/send/likeToLike"; //ارسال نظیر به نظیر
 	private readonly string _otp = "https://api.sms.ir/v1/send/verify"; //ارسال verify
+
+	public SmsDotIr(ILogger<SmsDotIr> logger, IHttpClientFactory httpClientFactory)
+	{
+		_logger = logger;
+		_httpClient = httpClientFactory.CreateClient();
+		_httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
+	}
 
 	public async Task<SmsIrResponse<StatusData>> GetStatus(int messageId)
 	{
@@ -33,9 +42,10 @@ public class SmsDotIr //: ISmsService
 		 */
 		try
 		{
-			HttpClient httpClient = new HttpClient();
-			httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
-			HttpResponseMessage response = await httpClient.GetAsync($"https://api.sms.ir/v1/send/{messageId}");
+			HttpResponseMessage response = await _httpClient.GetAsync($"https://api.sms.ir/v1/send/{messageId}");
+			string responseString = await response.Content.ReadAsStringAsync();
+			_logger.LogInformation("GetStatus: messageId={messageId} responseString={responseString}", messageId,
+				responseString);
 			SmsIrResponse<StatusData>? result = await response.Content.ReadFromJsonAsync<SmsIrResponse<StatusData>>();
 			if (result is null)
 			{
@@ -50,7 +60,7 @@ public class SmsDotIr //: ISmsService
 		}
 		catch (Exception e)
 		{
-			//TODO:log
+			_logger.LogError("GetStatus: messageId={messageId} exception={@exception}", messageId, e);
 			return new SmsIrResponse<StatusData>
 			{
 				Status = 0,
@@ -63,9 +73,10 @@ public class SmsDotIr //: ISmsService
 	{
 		try
 		{
-			HttpClient httpClient = new HttpClient();
-			httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
-			HttpResponseMessage response = await httpClient.GetAsync($"https://api.sms.ir/v1/send/pack/{packId}");
+			HttpResponseMessage response = await _httpClient.GetAsync($"https://api.sms.ir/v1/send/pack/{packId}");
+			string responseString = await response.Content.ReadAsStringAsync();
+			_logger.LogInformation("GetStatuses: packId={packId} responseString={responseString}", packId,
+				responseString);
 			SmsIrResponse<List<StatusesData>>? result =
 				await response.Content.ReadFromJsonAsync<SmsIrResponse<List<StatusesData>>>();
 			if (result is null)
@@ -81,7 +92,7 @@ public class SmsDotIr //: ISmsService
 		}
 		catch (Exception e)
 		{
-			//TODO:log
+			_logger.LogError("GetStatuses: packId={packId} exception={@exception}", packId, e);
 			return new SmsIrResponse<List<StatusesData>>
 			{
 				Status = 0,
@@ -94,10 +105,12 @@ public class SmsDotIr //: ISmsService
 	{
 		try
 		{
-			HttpClient httpClient = new HttpClient();
-			HttpResponseMessage response = await httpClient.GetAsync(
+			HttpResponseMessage response = await _httpClient.GetAsync(
 				$"https://api.sms.ir/v1/send?username={_username}&password={_apiKey}&mobile={mobile}&line={_lineNumebr}&text={message}"
 			);
+			string responseString = await response.Content.ReadAsStringAsync();
+			_logger.LogInformation("Send: message={message} ,mobile={mobile}, responseString={responseString}", message,
+				mobile, responseString);
 			SmsIrResponse<SendData>? result =
 				await response.Content.ReadFromJsonAsync<SmsIrResponse<SendData>>();
 			if (result is null)
@@ -113,7 +126,7 @@ public class SmsDotIr //: ISmsService
 		}
 		catch (Exception e)
 		{
-			//TODO:log
+			_logger.LogError("Send: message={message} ,mobile={mobile}, exception={@exception}", message, mobile, e);
 			return new SmsIrResponse<SendData>
 			{
 				Status = 0,
@@ -126,8 +139,6 @@ public class SmsDotIr //: ISmsService
 	{
 		try
 		{
-			HttpClient httpClient = new HttpClient();
-			httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
 			BulkRequest request = new()
 			{
 				LineNumber = _lineNumebr,
@@ -136,7 +147,11 @@ public class SmsDotIr //: ISmsService
 				SendDateTime = null
 			};
 			HttpContent content = JsonContent.Create(request);
-			HttpResponseMessage response = await httpClient.PostAsync("https://api.sms.ir/v1/send/bulk", content);
+			HttpResponseMessage response = await _httpClient.PostAsync("https://api.sms.ir/v1/send/bulk", content);
+			string responseString = await response.Content.ReadAsStringAsync();
+			_logger.LogInformation("SendBuck: message={message} ,mobiles={@mobiles}, responseString={responseString}",
+				message,
+				mobiles, responseString);
 			SmsIrResponse<BulkData>? result =
 				await response.Content.ReadFromJsonAsync<SmsIrResponse<BulkData>>();
 			if (result is null)
@@ -152,7 +167,9 @@ public class SmsDotIr //: ISmsService
 		}
 		catch (Exception e)
 		{
-			//TODO:log
+			_logger.LogError("SendBuck: message={message} ,mobiles={@mobiles}, exception={@exception}", message,
+				mobiles,
+				e);
 			return new SmsIrResponse<BulkData>
 			{
 				Status = 0,
@@ -163,10 +180,6 @@ public class SmsDotIr //: ISmsService
 
 	public async Task SendVerify(string message, string mobiles)
 	{
-		HttpClient httpClient = new HttpClient();
-
-		httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
-
 		VerifySendModel model = new VerifySendModel
 		{
 			Mobile = mobiles,
@@ -184,7 +197,7 @@ public class SmsDotIr //: ISmsService
 		StringContent stringContent = new(payload, Encoding.UTF8, "application/json");
 
 		HttpResponseMessage response =
-			await httpClient.PostAsync("https://api.sms.ir/v1/send/verify", stringContent);
+			await _httpClient.PostAsync("https://api.sms.ir/v1/send/verify", stringContent);
 	}
 }
 
@@ -216,9 +229,9 @@ public sealed class StatusData
 
 	public decimal Cost { get; set; }
 
-	public int DeliveryState { get; set; }
+	public int? DeliveryState { get; set; }
 
-	public long DeliveryDateTime { get; set; }
+	public long? DeliveryDateTime { get; set; }
 }
 
 public class VerifySendModel

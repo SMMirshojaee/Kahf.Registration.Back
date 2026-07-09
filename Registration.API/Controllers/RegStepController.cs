@@ -7,13 +7,16 @@ using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Controllers
 {
-    public partial class RegStepController(RegStepBusiness b, IMapper m, IOptions<AppSettings> ap, IHttpContextAccessor ac) :
-        GenericController<RegStepBusiness, RegStep>(b, m, ap, ac)
-    {
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll() =>
-            Ok(Mapper.Map<List<RegStepDto>>(await Business.GetByRegId(RegId)));
-
-    }
+	public partial class RegStepController(
+		RegStepBusiness b,
+		IMapper m,
+		IOptions<AppSettings> ap,
+		IHttpContextAccessor ac,
+		ILoggerFactory lg) :
+		GenericController<RegStepBusiness, RegStep>(b, m, ap, ac, lg)
+	{
+		[HttpGet]
+		public async Task<IActionResult> GetAll() =>
+			Ok(Mapper.Map<List<RegStepDto>>(await Business.GetByRegId(RegId)));
+	}
 }

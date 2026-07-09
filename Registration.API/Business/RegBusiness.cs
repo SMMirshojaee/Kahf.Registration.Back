@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Registration.API.Entity.Dtos;
 
 namespace Registration.API.Business;
 

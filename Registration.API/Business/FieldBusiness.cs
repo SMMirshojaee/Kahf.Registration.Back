@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Registration.API.Entity.Models;
 
 namespace Registration.API.Business;
 
@@ -29,7 +28,7 @@ public class FieldBusiness(ApplicantBusiness applicantBusiness, RegContext conte
 
     public Task<List<Field>> GetAllWithOptions(int regId)
     {
-        return Where(e => e.RegStep.RegId == regId)
+        return Where(e => e.RegStep.RegId == regId && !e.Hidden)
             .Include(e => e.FieldOptions)
             .OrderBy(e => e.Order)
             .ToListAsync();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Registration.API.Entity.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Registration.API.Entity;
 
