@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Registration.API.Entity.Models;
+﻿namespace Registration.API.Entity.Models;
 
 public partial class FieldType
 {

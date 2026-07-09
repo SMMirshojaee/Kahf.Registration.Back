@@ -1,6 +1,4 @@
-﻿using Registration.API.Entity.Models;
-
-namespace Registration.API.Entity.Dtos;
+﻿namespace Registration.API.Entity.Dtos;
 
 public class ApplicantFormValueDto
 {

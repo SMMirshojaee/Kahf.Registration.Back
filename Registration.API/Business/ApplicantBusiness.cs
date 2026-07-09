@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
@@ -9,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Registration.API.Common;
 using Registration.API.Entity.Dtos;
-using Registration.API.Entity.Models;
 
 namespace Registration.API.Business;
 
@@ -179,8 +176,8 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
         if (regStep is null)
             return new List<Applicant>();
         return await Where(e => !e.LeaderId.HasValue && ((regStep.Order == 1 && !e.StatusId.HasValue && e.RegId == regStep.RegId) || e.Status.RegStepId == regStepId))
-            .Include(e => e.ApplicantFormValues)
-            .Include(e => e.InverseLeader).ThenInclude(e => e.ApplicantFormValues)
+            .Include(e => e.ApplicantFormValues.Where(afv=>!afv.Field.Hidden))
+            .Include(e => e.InverseLeader).ThenInclude(e => e.ApplicantFormValues.Where(afv=>!afv.Field.Hidden))
             .Include(e => e.Status)
             .Include(e => e.Messages)
             .ToListAsync();
@@ -220,8 +217,8 @@ public class ApplicantBusiness(RegStepBusiness regStepBusiness, RegContext conte
 
     public Task<List<Applicant>> GetLeadersFullDataByRegId(int regId)
         => Where(e => !e.LeaderId.HasValue && e.RegId == regId)
-            .Include(e => e.ApplicantFormValues)
-            .Include(e => e.InverseLeader).ThenInclude(e => e.ApplicantFormValues)
+            .Include(e => e.ApplicantFormValues.Where(afv=>!afv.Field.Hidden))
+            .Include(e => e.InverseLeader).ThenInclude(e => e.ApplicantFormValues.Where(afv=>!afv.Field.Hidden))
             .Include(e => e.Status)
             .Include(e => e.Messages)
             .ToListAsync();

@@ -1,16 +1,14 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Registration.API.Common;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +110,18 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("SuperAdmin", policy =>
         policy.RequireClaim(ClaimTypes.Actor, "SuperAdmin"));
 });
+builder.Services.AddHttpClient();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()         
+    .WriteTo.Console()
+    .WriteTo.File("logs/app-.log",     
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 60,     
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} :: {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+
+builder.Host.UseSerilog(Log.Logger, dispose: true);
 
 var app = builder.Build();
 app.UseCors("AllowAll");

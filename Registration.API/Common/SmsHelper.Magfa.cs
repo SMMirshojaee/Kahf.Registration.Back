@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 using Registration.API.Business;
-using Registration.API.Entity.Models;
 using SMS;
 
 namespace Registration.API.Common
