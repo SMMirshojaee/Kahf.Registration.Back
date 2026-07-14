@@ -13,8 +13,14 @@ public class RegController(
 	IMapper m,
 	IOptions<AppSettings> ap,
 	IHttpContextAccessor ac,
-	ILoggerFactory lg) : GenericController<RegBusiness, Reg>(b, m, ap, ac, lg)
+	ILoggerFactory lg,
+	SmsHelper smsHelper) : GenericController<RegBusiness, Reg>(b, m, ap, ac, lg)
 {
+	[HttpGet]
+	[AllowAnonymous]
+	public async Task<IActionResult> TEST() =>
+		Ok(await smsHelper.Send(477, "0011227168", "09128486146", "سلام", null));
+
 	[HttpGet]
 	[Authorize("Admin")]
 	public async Task<IActionResult> GetAll() =>
@@ -32,6 +38,6 @@ public class RegController(
 
 	[HttpGet]
 	[AllowAnonymous]
-	public async Task<IActionResult> GetActiveRegs() 
+	public async Task<IActionResult> GetActiveRegs()
 		=> Ok(await Business.GetActiveRegs());
 }

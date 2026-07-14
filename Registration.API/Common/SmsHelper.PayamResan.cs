@@ -1,10 +1,11 @@
 ﻿using System.Net;
 using Registration.API.Business;
 using SMS;
+using SMS.Models.PayamResan;
 
 namespace Registration.API.Common
 {
-	public class SmsHelper_old2(SmsDotIr smsService, MessageBusiness messageBusiness)
+	public class SmsHelper(PayamResan smsService, MessageBusiness messageBusiness)
 	{
 		//public static string ReplaceTemplates(this string smsText, string? firstName = null, string? lastName = null,
 		//    string? nationalNumber = null, string? trackingCode = null)
@@ -36,16 +37,19 @@ namespace Registration.API.Common
 			if (!report.Successful)
 				return ActionReport.Error(report);
 
-			SmsIrResponse<SendData> response = await smsService.Send(text, mobile);
-			if (!response.IsSuccessful)
+			SMSOutputGenericModel<List<SendSMSOutput>> response = await smsService.SendSmsAsync(text, mobile);
+			if (!response.Success)
 				return ActionReport.Error(HttpStatusCode.InternalServerError);
 
 			await Task.Delay(2000);
 
-			SmsIrResponse<StatusData>? statusReport = await smsService.GetStatus(response.Data.MessageId);
-			if (statusReport.IsSuccessful)
+			var statusReport = await smsService.StatusById(new GetStatusByIdInput
 			{
-				message.Status = statusReport.Data.DeliveryState;
+				Ids = response.Result.Select(e => e.Id).ToArray()
+			});
+			if (statusReport.Success && statusReport.Result.Any())
+			{
+				message.Status = (int)statusReport.Result.First().StatusCode;
 			}
 
 			return await messageBusiness.SaveChanges();
@@ -67,28 +71,32 @@ namespace Registration.API.Common
 			if (!report.Successful)
 				return ActionReport.Error(report);
 
-			SmsIrResponse<BulkData> sendResponse =
-				await smsService.SendBuck(text, messages.Select(e => e.Mobile).ToList());
-			if (!sendResponse.IsSuccessful)
+			var sendResponse =
+				await smsService.SendSmsAsync(text, string.Join(",", messages.Select(e => e.Mobile)));
+			if (!sendResponse.Success)
 				return ActionReport.Error(HttpStatusCode.InternalServerError);
 
-			List<(Message Message, int Id)> messageAndIds = new();
+			List<(Message Message, long Id)> messageAndIds = new();
 			await Task.WhenAll(
 				Task.Run(() =>
 				{
-					messageAndIds = messages.Zip(sendResponse.Data.MessageIds, (message, id) => (message, id))
+					messageAndIds = messages.Zip(sendResponse.Result.Select(r => r.Id), (message, id) => (message, id))
 						.ToList();
 				}),
 				Task.Delay(2000));
-			SmsIrResponse<List<StatusesData>> statusReport = await smsService.GetStatuses(sendResponse.Data.PackId);
-			if (statusReport.IsSuccessful)
-			{
-				foreach (StatusesData status in statusReport.Data.Where(e=>e.DeliveryState.HasValue))
+			SMSOutputGenericModel<List<SMSStatusOutput>> statusReport = await smsService.StatusById(
+				new GetStatusByIdInput
 				{
-					(Message Message, int Id)? messageAndId =
-						messageAndIds.FirstOrDefault(e => e.Id == status.MessageId);
+					Ids = sendResponse.Result.Select(e => e.Id).ToArray()
+				});
+			if (statusReport.Success)
+			{
+				foreach (SMSStatusOutput status in statusReport.Result)
+				{
+					(Message Message, long Id)? messageAndId =
+						messageAndIds.FirstOrDefault(e => e.Id == status.Id);
 					if (messageAndId is null) continue;
-					messageAndId!.Value.Message.Status = status.DeliveryState;
+					messageAndId!.Value.Message.Status = (int)status.StatusCode;
 				}
 			}
 
