@@ -33,4 +33,21 @@ public class RegStepBusiness(RegContext context, IMapper mapper) : GenericBusine
 
         return null;
     }
+    
+    public async Task<RegStep?> GetPreviousStep(int currentRegStepId)
+    {
+        int regId = (await GetById(currentRegStepId))!.RegId;
+        List<RegStep> regSteps = await GetByRegId(regId);
+        if (regSteps is { Count: > 0 })
+        {
+            int index = regSteps.FindIndex(e => e.Id == currentRegStepId);
+            if (index == -1)
+                return null;
+            if (index == 0)
+                return null;
+            return regSteps[index - 1];
+        }
+
+        return null;
+    }
 }
