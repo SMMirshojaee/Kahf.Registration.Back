@@ -41,7 +41,9 @@ public class OrderDto
     public string? Description { get; set; }
 
     public ICollection<OrderDto>? InverseLoan { get; set; }
-}
+
+	public required string NationalNumber { get; set; }
+    }
 
 public class InstallmentDto
 {

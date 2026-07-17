@@ -92,12 +92,28 @@ namespace Registration.API.Controllers
             ActionReport<OrderDto> report = await orderBusiness.InsertInstallment(UserId, newInstallment);
             return Status(report);
         }
-        
-        [HttpDelete("{id}")]
+
+		[HttpPost]
+		[Authorize("SuperAdmin")]
+		public async Task<IActionResult> InsertCash([FromQuery] DateTime verifyDate, [FromBody] OrderDto newCash)
+		{
+			newCash.VerifyDate = verifyDate;
+			ActionReport<OrderDto> report = await orderBusiness.AddNewOrder(UserId, newCash);
+			return Status(report);
+		}
+
+		[HttpDelete("{id}")]
         [Authorize("SuperAdmin")]
         public async Task<IActionResult> RemoveInstallment(int id)
         {
             return Status(await orderBusiness.Delete(id));
         }
-    }
+
+		[HttpDelete("{id}")]
+		[Authorize("SuperAdmin")]
+		public async Task<IActionResult> RemoveOrder(int id)
+		{
+			return Status(await orderBusiness.Delete(id));
+		}
+	}
 }
